@@ -26,5 +26,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rack-test",               "~> 0.6.3"
 
   spec.add_runtime_dependency "grac",                        "~> 2.2.0"
-  spec.add_runtime_dependency "openssl",                     "~> 1.1.0"
 end
