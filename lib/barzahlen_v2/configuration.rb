@@ -1,8 +1,8 @@
 module BarzahlenV2
-  Api_host = "https://api.barzahlen.de/"
-  Api_host_sandbox = "https://api-sandbox.barzahlen.de/"
-
   class Configuration
+    API_HOST = "https://api.barzahlen.de/v2"
+    API_HOST_SANDBOX = "https://api-sandbox.barzahlen.de/v2"
+
     attr_accessor :sandbox
     attr_accessor :division_id
     attr_accessor :payment_key
