@@ -2,36 +2,48 @@ require "json"
 
 module BarzahlenV2
   module Error
-    class ApiError
-      attr_reader :http_status
-      attr_reader :error_class
-      attr_reader :error_code
-      attr_reader :message
-      attr_reader :documentation_url
-      attr_reader :request_id
+    class ArgumentMissing
+      attr_reader :argument
 
-      def initialize(http_status,error_class,error_code,message,documentation_url,request_id)
-        @http_status = http_status
+      def initialize(argument = [])
+        @argument = argument
+      end
+
+      def message
+        return "One or all MissingArgument(s): '#{argument.join("','")}'"
+      end
+
+      alias_method :to_s, :message
+    end
+
+    class ApiError
+      attr_reader :http_status, :error_class, :error_code, :error_message, :documentation_url, :request_id
+
+      def initialize(http_status, error_class, error_code, message, documentation_url, request_id)
+        @http_status = http_status.to_s
         @error_class = error_class
         @error_code = error_code
-        @message = message
+        @error_message = message
         @documentation_url = documentation_url
         @request_id = request_id
       end
 
-      def self.to_s
-        return "Error occured with: #{@message}"\
+      def message
+        return "Error occured with: #{@error_message} "\
                "Http Status Code: #{@http_status} "\
                "Barzahlen Error Code: #{@error_code} "\
-               "Please look for help on: #{@documentation_url}"\
+               "Please look for help on: #{@documentation_url} "\
                "Your request_id is: #{@request_id}"
       end
+
+      alias_method :to_s, :message
     end
 
-    def self.generate_error_from_response(http_status,response_json)
-      parsed_json_error = JSON.parse(response_json)
+    # This generates ApiErrors based on the response error classes of CPS
+    def self.generate_error_from_response(http_status, response_body)
+      error_hash = generate_error_hash_with_symbols(response_body)
 
-      error_class_name = parsed_json_error["error_class"].capitalize
+      error_class_name = error_hash[:error_class].capitalize.tr(" ","_")
 
       begin
         BarzahlenV2::Error.const_get(error_class_name)
@@ -42,12 +54,44 @@ module BarzahlenV2
 
       BarzahlenV2::Error.const_get(error_class_name).new(
         http_status,
-        parsed_json_error["error_class"],
-        parsed_json_error["error_code"],
-        parsed_json_error["message"],
-        parsed_json_error["documentation_url"],
-        parsed_json_error["request_id"]
+        error_hash[:error_class],
+        error_hash[:error_code],
+        error_hash[:message],
+        error_hash[:documentation_url],
+        error_hash[:request_id]
         )
     end
+
+    private
+      def self.parse_json(json)
+        begin
+          hash = JSON.parse(json)
+        rescue JSON::ParserError => e
+          return nil
+        end
+        self.symbolize_keys(hash)
+      end
+
+      def self.generate_error_hash_with_symbols(body)
+        if body.is_a?(Hash)
+          error_hash = self.symbolize_keys(body)
+        elsif body.is_a?(String)
+          error_hash = parse_json(body) || {}
+        else
+          error_hash = Hash.new
+        end
+
+        error_hash[:error_class] ||= "Unexpected_Error"
+        error_hash[:error_code] ||= "Unknown error code (body): \"#{body.to_s}\""
+        error_hash[:message] ||= "Please contact CPS to help us fix that as soon as possible."
+        error_hash[:documentation_url] ||= "https://www.cashpaymentsolutions.com/de/geschaeftskunden/kontakt"
+        error_hash[:request_id] ||= "not_available"
+
+        error_hash
+      end
+
+      def self.symbolize_keys(hash)
+        Hash[hash.map{ |k, v| [k.to_sym, v] }]
+      end
   end
 end
