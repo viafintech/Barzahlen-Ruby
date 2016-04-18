@@ -1,5 +1,6 @@
 [control_center_app]: control-center.barzahlen.de
 [api_online_v2_documentation]: barzahlen.de/api-documentation
+[rails_response]: http://edgeguides.rubyonrails.org/action_controller_overview.html#the-response-object
 
 # Barzahlen Ruby Online API V2 Client
 
@@ -163,7 +164,53 @@ Invalidating a slip is done following:
 BarzahlenV2::Online.invalidate_slip(slip_id)
 ```
 
-### notification handling
+### Notification Handling
+
+The notification handling is expecting a standard [rails response][rails-response] can be used by simply doing the following:
+
+```Ruby
+response_hash = BarzahlenV2::Online.webhook_request(response)
+```
+
+Following can happen:
+* If the request is an api v1 webhook request was issued nil is returned
+* If the content type is something else than json nil is returned
+* If the everything works fine a hash with the content is returned
+
+Example hash return:
+
+```Ruby
+{
+  "event" => "paid",
+  "event_occurred_at" => "2016-01-06T12:34:56Z",
+  "affected_transaction_id" => "4729294329",
+  "slip" => {
+    "id" => "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
+    "slip_type" => "payment",
+    "division_id" => "1234",
+    "reference_key" => "O64737X",
+    "expires_at" => "2016-01-10T12:34:56Z",
+    "customer" => {
+      "key" => "LDFKHSLFDHFL",
+      "cell_phone_last_4_digits" => "6789",
+      "email" => "john@example.com",
+      "language" => "de-DE"
+    },
+    "metadata" => {
+      "order_id" => 1234,
+      "invoice_no" => "A123"
+    },
+    "transactions" => [
+      {
+        "id" => "4729294329",
+        "currency" => "EUR",
+        "amount" => "123.34",
+        "state" => "paid"
+      }
+    ]
+  }
+}
+```
 
 ## Interprete Error and return
 
