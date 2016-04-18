@@ -2,7 +2,7 @@ require "json"
 
 module BarzahlenV2
   module Error
-    class ArgumentMissing
+    class ArgumentMissing < StandardError
       attr_reader :argument
 
       def initialize(argument = [])
@@ -16,7 +16,7 @@ module BarzahlenV2
       alias_method :to_s, :message
     end
 
-    class ApiError
+    class ApiError < StandardError
       attr_reader :http_status, :error_class, :error_code, :error_message, :documentation_url, :request_id
 
       def initialize(http_status, error_class, error_code, message, documentation_url, request_id)

@@ -4,6 +4,12 @@ require "json"
 module BarzahlenV2
   module Error
     describe ArgumentMissing do
+      it "should be of type StandardError" do
+        exception = BarzahlenV2::Error::ArgumentMissing.new(["slip_id"])
+
+        expect(exception).to be_an(StandardError)
+      end
+
       it "creates error message correctly" do
         exception = BarzahlenV2::Error::ArgumentMissing.new(["slip_id"])
 
@@ -27,6 +33,12 @@ module BarzahlenV2
           documentation_url: "https://www.barzahlen.de/",
           request_id: "64ec26b27d414a66b87f2ec7cad7e92c"
         }
+      end
+
+      it "should be of type StandardError" do
+        error_class = BarzahlenV2::Error.generate_error_from_response("400", @response.to_json)
+
+        expect(error_class).to be_an(StandardError)
       end
 
       it "generate invalid_parameter class from json" do
