@@ -6,6 +6,32 @@
 
 The official ruby gem for accessing the new Barzahlen (CPS) API Online V2.
 
+## Installation
+
+Add this line to your application's gemfile
+
+```Ruby
+gem 'barzahlen_v2', '~> 0.0.1'
+```
+
+Then execute:
+
+```shell
+bundle install
+```
+
+Or install it yourself by typing
+
+```shell
+gem install barzahlen_v2
+```
+
+Finally:
+
+```Ruby
+require 'barzahlen_v2'
+```
+
 ## Configuration Values
 
 The gems configuration values are following:  
