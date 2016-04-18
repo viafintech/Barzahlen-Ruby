@@ -1,5 +1,6 @@
 require "openssl"
 require "uri"
+require "date"
 
 module BarzahlenV2
   module Middleware
@@ -11,7 +12,7 @@ module BarzahlenV2
 
       def call (opts, request_uri, method, params, body)
         request_host_header = URI.parse(request_uri).host
-        request_method = method.upcase
+        request_method = method
         request_host_path = URI.parse(request_uri).path
         request_query_string = URI.encode_www_form(params)
         request_idempotency_key = opts[:headers]["Idempotency-Key"]
@@ -21,7 +22,6 @@ module BarzahlenV2
         signature = BarzahlenV2::Middleware.generate_bz_signature(
           request_host_header,
           request_method,
-          BarzahlenV2::configuration.payment_key,
           request_date_header,
           request_host_path,
           request_query_string,
@@ -38,20 +38,35 @@ module BarzahlenV2
             }
           }
 
-        result = @request.call(opts[:headers].merge(signature_headers), request_uri, method, params, body)
+        begin
+          result = @request.call(opts[:headers].merge(signature_headers), request_uri, method, params, body)
+        rescue Grac::Exception::BadRequest,
+               Grac::Exception::Forbidden,
+               Grac::Exception::NotFound,
+               Grac::Exception::Conflict
+          # check_bz_response_for_failure will take care of the error creation
+        end
+        
+        check_bz_response_for_failure(result)
 
         return result
       end
+
+      def check_bz_response_for_failure(response)
+        if [*400..599].include? response.code.to_i
+          raise BarzahlenV2::Error.generate_error_from_response(response.code,response.body)
+        end
+      end
     end
 
-    def self.generate_bz_signature(request_host_header, request_method, payment_key, request_date_header,
+    def self.generate_bz_signature(request_host_header, request_method, request_date_header,
       request_host_path = "", request_query_string = "", request_body = "", request_idempotency_key = "")
-      request_body_digest = BarzahlenV2::Middleware.generate_sha256_digest(request_body)
+      request_body_digest = self.generate_sha256_digest(request_body)
 
-      raw_signature = "#{request_host_header}\n#{request_method}\n#{request_host_path}\n#{request_query_string}\n"\
+      raw_signature = "#{request_host_header}\n#{request_method.upcase}\n#{request_host_path}\n#{request_query_string}\n"\
         "#{request_date_header}\n#{request_idempotency_key}\n#{request_body_digest}"
 
-      OpenSSL::HMAC.hexdigest("SHA256", payment_key, raw_signature)
+      OpenSSL::HMAC.hexdigest("SHA256", BarzahlenV2::configuration.payment_key, raw_signature)
     end
 
     def self.generate_sha256_digest(string_to_hash)
