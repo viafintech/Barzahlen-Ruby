@@ -34,8 +34,8 @@ module BarzahlenV2
       it "creates error message correctly" do
         exception = BarzahlenV2::Error::SignatureError.new("The self generated signature is not complying to the provided signature.")
 
-        expect(exception.message).to eq("One or all MissingArgument(s): 'slip_id'")
-        expect(exception.to_s).to eq("One or all MissingArgument(s): 'slip_id'")
+        expect(exception.message).to eq("The self generated signature is not complying to the provided signature.")
+        expect(exception.to_s).to eq("The self generated signature is not complying to the provided signature.")
       end
     end
 

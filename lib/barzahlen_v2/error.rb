@@ -19,12 +19,12 @@ module BarzahlenV2
     class SignatureError < StandardError
       attr_reader :error_message
 
-      def initialize(message)
+      def initialize(error_message)
         @error_message = error_message
       end
 
       def message
-        return error_message
+        return @error_message
       end
 
       alias_method :to_s, :message
