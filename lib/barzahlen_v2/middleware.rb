@@ -46,7 +46,7 @@ module BarzahlenV2
                Grac::Exception::Conflict
           # check_bz_response_for_failure will take care of the error creation
         end
-        
+
         check_bz_response_for_failure(result)
 
         return result
