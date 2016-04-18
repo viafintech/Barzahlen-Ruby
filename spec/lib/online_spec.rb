@@ -33,7 +33,7 @@ module BarzahlenV2
           }
       }
 
-      after :each do
+      before :each do
         @@grac_client = nil
       end
 
