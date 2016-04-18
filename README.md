@@ -51,29 +51,29 @@ Following is happening during a request:
 
 ```Ruby
 {
-  "id": "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
-  "slip_type": "payment",
-  "division_id": 1234,
-  "reference_key": "O64737X",
-  "hook_url": "https://psp.example.com/hook",
-  "expires_at": "2016-01-10T12:34:56Z",
-  "customer": {
-    "key": "LDFKHSLFDHFL",
-    "cell_phone_last_4_digits": "6789",
-    "email": "john@example.com",
-    "language": "de-DE"
+  "id" => "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
+  "slip_type" => "payment",
+  "division_id" => 1234,
+  "reference_key" => "O64737X",
+  "hook_url" => "https://psp.example.com/hook",
+  "expires_at" => "2016-01-10T12:34:56Z",
+  "customer" => {
+    "key" => "LDFKHSLFDHFL",
+    "cell_phone_last_4_digits" => "6789",
+    "email" => "john@example.com",
+    "language" => "de-DE"
   },
-  "checkout_token": "djF8Y2hrdHxzbHAtMTM4ZWI3NzUtOWY5Yy00NzYwLWI4ZTAtYTNlZWNmYjQ5M2IxfElBSThZMnd6SFYwbjJpMm9aSUpvREpnYnhNS3c5Z2x3elJOanlLblZJeFk9",
-  "metadata": {
-    "order_id": 1234,
-    "invoice_no": "A123"
+  "checkout_token" => "djF8Y2hrdHxzbHAtMTM4ZWI3NzUtOWY5Yy00NzYwLWI4ZTAtYTNlZWNmYjQ5M2IxfElBSThZMnd6SFYwbjJpMm9aSUpvREpnYnhNS3c5Z2x3elJOanlLblZJeFk9",
+  "metadata" => {
+    "order_id" => 1234,
+    "invoice_no" => "A123"
   },
-  "transactions": [
+  "transactions" => [
     {
-      "id": "4729294329",
-      "currency": "EUR",
-      "amount": "123.34",
-      "state": "pending"
+      "id" => "4729294329",
+      "currency" => "EUR",
+      "amount" => "123.34",
+      "state" => "pending"
     }
   ]
 }
