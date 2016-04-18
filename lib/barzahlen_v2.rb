@@ -3,9 +3,8 @@ require "grac"
 require "barzahlen_v2/version"
 require "barzahlen_v2/error"
 require "barzahlen_v2/configuration"
-require "barzahlen_v2/signature"
-require "barzahlen_v2/request"
-require "barzahlen_v2/slip"
+require "barzahlen_v2/middleware"
+require "barzahlen_v2/online"
 
 module BarzahlenV2
   class << self
