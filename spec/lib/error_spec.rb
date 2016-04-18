@@ -14,13 +14,28 @@ module BarzahlenV2
         exception = BarzahlenV2::Error::ArgumentMissing.new(["slip_id"])
 
         expect(exception.message).to eq("One or all MissingArgument(s): 'slip_id'")
-        expect(exception.message).to eq("One or all MissingArgument(s): 'slip_id'")
+        expect(exception.to_s).to eq("One or all MissingArgument(s): 'slip_id'")
       end
 
       it "creates multiple values error message correctly" do
         exception = BarzahlenV2::Error::ArgumentMissing.new(["slip_id","customer_key"])
 
         expect(exception.message).to eq("One or all MissingArgument(s): 'slip_id','customer_key'")
+      end
+    end
+
+    describe SignatureError do
+      it "should be of type StandardError" do
+        exception = BarzahlenV2::Error::SignatureError.new("Signature failure")
+
+        expect(exception).to be_an(StandardError)
+      end
+
+      it "creates error message correctly" do
+        exception = BarzahlenV2::Error::SignatureError.new("The self generated signature is not complying to the provided signature.")
+
+        expect(exception.message).to eq("One or all MissingArgument(s): 'slip_id'")
+        expect(exception.to_s).to eq("One or all MissingArgument(s): 'slip_id'")
       end
     end
 

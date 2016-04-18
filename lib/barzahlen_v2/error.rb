@@ -16,6 +16,20 @@ module BarzahlenV2
       alias_method :to_s, :message
     end
 
+    class SignatureError < StandardError
+      attr_reader :error_message
+
+      def initialize(message)
+        @error_message = error_message
+      end
+
+      def message
+        return error_message
+      end
+
+      alias_method :to_s, :message
+    end
+
     class ApiError < StandardError
       attr_reader :http_status, :error_class, :error_code, :error_message, :documentation_url, :request_id
 

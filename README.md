@@ -175,6 +175,7 @@ response_hash = BarzahlenV2::Online.webhook_request(response)
 Following can happen:
 * If the request is an api v1 webhook request was issued nil is returned
 * If the content type is something else than json nil is returned
+* If the signature comparison is not valid a SignatureError is raised
 * If the everything works fine a hash with the content is returned
 
 Example hash return:
@@ -212,7 +213,7 @@ Example hash return:
 }
 ```
 
-## Interprete Error and return
+## Interprete Api Error and return
 
 Errors will be generated and raised based on the api online v2 error response information.
 
