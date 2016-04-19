@@ -111,6 +111,9 @@ module BarzahlenV2
         response.body
         )
 
+      puts signature
+      puts response.headers["Bz-Signature"]
+
       if bz_signature.include? signature
         return JSON.parse(response.body)
       else

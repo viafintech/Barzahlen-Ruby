@@ -1,4 +1,5 @@
 require "spec_helper"
+require "json"
 
 module BarzahlenV2
   module Online
@@ -110,7 +111,7 @@ module BarzahlenV2
       end
 
       it "is setting correct uri" do
-        request = BarzahlenV2::Online::Slip.new(refund_slip)
+        BarzahlenV2::Online::Slip.new(refund_slip)
 
         expect(@@grac_client.uri).to eq("https://api.barzahlen.de/v2")
       end
@@ -120,7 +121,7 @@ module BarzahlenV2
           config.sandbox = true
         }
 
-        request = BarzahlenV2::Online::Slip.new(refund_slip)
+        BarzahlenV2::Online::Slip.new(refund_slip)
 
         expect(@@grac_client.uri).to eq("https://api-sandbox.barzahlen.de/v2")
       end
@@ -191,7 +192,66 @@ module BarzahlenV2
     end
 
     describe "Webhook request" do
-      #need to test
+      let(:response) {
+        return Class.new {
+          attr_accessor :headers, :location, :body
+
+          def initialize
+            @headers = {
+              "Host" => "callback.example.com",
+              "Date" => "Fri, 01 Apr 2016 09:20:06 GMT",
+              "Bz-Signature" => "BZ1-HMAC-SHA256 eb22cda264a5cf5a138e8ac13f0aa8da2daf28c687d9db46872cf777f0decc04",
+              "Content-Type" => "application/json",
+              "Bz-Hook-Format" => "v2"
+            }
+            @location = "/barzahlen/callback"
+            @body = '{
+    "event": "paid",
+    "event_occurred_at": "2016-01-06T12:34:56Z",
+    "affected_transaction_id": "4729294329",
+    "slip": {
+        "id": "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
+        "slip_type": "payment",
+        "division_id": "1234",
+        "reference_key": "O64737X",
+        "expires_at": "2016-01-10T12:34:56Z",
+        "customer": {
+            "key": "LDFKHSLFDHFL",
+            "cell_phone_last_4_digits": "6789",
+            "email": "john@example.com",
+            "language": "de-DE"
+        },
+        "metadata": {
+          "order_id": 1234,
+          "invoice_no": "A123"
+        },
+        "transactions": [
+          {
+            "id": "4729294329",
+            "currency": "EUR",
+            "amount": "123.34",
+            "state": "paid"
+          }
+        ]
+    }
+}'
+          end
+        }.new
+      }
+
+      before do
+
+      end
+
+      it "takes response and returns a hash to work with" do
+        BarzahlenV2.configure do |config|
+          config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
+        end
+
+        expect {
+          BarzahlenV2::Online.webhook_request(response)
+        }.to_not raise_error
+      end
     end
   end
 end
