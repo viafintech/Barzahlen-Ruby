@@ -27,7 +27,7 @@ module BarzahlenV2
           {
             headers: {
               Date: @date,
-              Authorization: "BZ1-HMAC-SHA256 DivisionId=123456, Signature=7ce8e51b81f05fb9eaaa97f47fce8f14fe1809946255e867d1c09013485af13d",
+              Authorization: "BZ1-HMAC-SHA256 DivisionId=123456, Signature=8c2cfde1cfb24289a5534a8af5e4d90082c54ace7461419da483b01cd4efb519",
               Host: "api.barzahlen.de"
             }
           },
@@ -85,7 +85,7 @@ module BarzahlenV2
           @request_date_header
           )
 
-        expect(signature).to eq("354dc8aad7823e9c13f1a35a19ee4f1f091cd73c517b0ebd3e6427e8b7d12ce5")
+        expect(signature).to eq("f9657db3b4adba7c838a16f22a7e3202c80d5f09c2a8caae7f065d0015b6c0b1")
       end
 
       it "generates the signature correctly with idempotency key" do
@@ -99,7 +99,7 @@ module BarzahlenV2
           @request_idempotency_key
           )
 
-        expect(signature).to eq("bd5b0ca2ab55759ddeebc778c03aa1ecaee5b91ed4de1a38ffb1f5af68a0137b")
+        expect(signature).to eq("6152ebdf8ba4254bf069c63c7e84d48a8f85606821a17637ecf838114a7b3159")
       end
 
       it "generates the signature correctly everything set" do
@@ -117,7 +117,88 @@ module BarzahlenV2
           @request_idempotency_key
           )
 
-        expect(signature).to eq("a5c597bdf1228d1da54b6cf711f04f5a09f90d0e48b88379f77596ffd45de7a2")
+        expect(signature).to eq("35235b5aa4a7a0e30aa6ca9fe115cfff2f8b100ddca0eaf8370f2c557305a1f8")
+      end
+
+      it "generates a correct webhook signature" do
+        BarzahlenV2.configure do |config|
+          config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
+        end
+
+        @request_host_header = "callback.example.com"
+        @request_method = "POST"
+        @request_date_header = "Fri, 01 Apr 2016 09:20:06 GMT"
+        @request_host_path = "/barzahlen/callback"
+        @request_query_string = ""
+        @request_body = {
+            "event" => "paid",
+            "event_occurred_at" => "2016-01-06T12:34:56Z",
+            "affected_transaction_id" => "4729294329",
+            "slip" => {
+                "id" => "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
+                "slip_type" => "payment",
+                "division_id" => "1234",
+                "reference_key" => "O64737X",
+                "expires_at" => "2016-01-10T12:34:56Z",
+                "customer" => {
+                    "key" => "LDFKHSLFDHFL",
+                    "cell_phone_last_4_digits" => "6789",
+                    "email" => "john@example.com",
+                    "language" => "de-DE"
+                },
+                "metadata" => {
+                  "order_id" => 1234,
+                  "invoice_no" => "A123"
+                },
+                "transactions" => [
+                  {
+                    "id" => "4729294329",
+                    "currency" => "EUR",
+                    "amount" => "123.34",
+                    "state" => "paid"
+                  }
+                ]
+            }
+        }.to_json
+        @request_idempotency_key = ""
+
+        signature = BarzahlenV2::Middleware.generate_bz_signature(
+          @request_host_header,
+          @request_method,
+          @request_date_header,
+          @request_host_path,
+          @request_query_string,
+          @request_body,
+          @request_idempotency_key
+          )
+
+        expect(signature).to eq("eb22cda264a5cf5a138e8ac13f0aa8da2daf28c687d9db46872cf777f0decc04")
+      end
+
+      it "generates the signature correctly everything set" do
+        BarzahlenV2.configure do |config|
+          config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
+        end
+
+        @request_host_header = "api.barzahlen.de"
+        @request_method = "GET"
+        @request_date_header = "Thu, 31 Mar 2016 10:50:31 GMT"
+        @request_host_path = "/v2/slips/slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd"
+        @request_query_string = ""
+        @request_body = ""
+        @request_idempotency_key = ""
+
+        signature = BarzahlenV2::Middleware.generate_bz_signature(
+          @request_host_header,
+          @request_method,
+          @request_date_header,
+          @request_host_path,
+          @request_query_string,
+          @request_body,
+          @request_idempotency_key
+          )
+
+        expect(signature).to eq("3b1a28fffd1cd2bbc1ec24cfbca1e85d802159e78c08328d92d4337a4a33b61d")
       end
     end
   end

@@ -70,8 +70,6 @@ module BarzahlenV2
       request_host_path = "", request_query_string = "", request_body = "", request_idempotency_key = "")
       request_body_digest = OpenSSL::Digest.hexdigest("SHA256", request_body)
 
-      puts request_body_digest
-
       raw_signature = "#{request_host_header}\n#{request_method.upcase}\n#{request_host_path}\n#{request_query_string}\n"\
         "#{request_date_header}\n#{request_idempotency_key}\n#{request_body_digest}"
 
