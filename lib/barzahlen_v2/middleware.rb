@@ -40,11 +40,18 @@ module BarzahlenV2
 
         begin
           result = @request.call(opts[:headers].merge(signature_headers), request_uri, method, params, body)
-        rescue Grac::Exception::BadRequest,
-               Grac::Exception::Forbidden,
-               Grac::Exception::NotFound,
-               Grac::Exception::Conflict
-          # check_bz_response_for_failure will take care of the error creation
+        rescue Grac::Exception::RequestFailed => e
+          raise BarzahlenV2::Error.generate_error_from_response(0,e.body)
+        rescue Grac::Exception::BadRequest => e
+          raise BarzahlenV2::Error.generate_error_from_response(400,e.body)
+        rescue Grac::Exception::Forbidden => e
+          raise BarzahlenV2::Error.generate_error_from_response(403,e.body)
+        rescue Grac::Exception::NotFound => e
+          raise BarzahlenV2::Error.generate_error_from_response(404,e.body)
+        rescue Grac::Exception::Conflict => e
+          raise BarzahlenV2::Error.generate_error_from_response(409,e.body)
+        rescue Grac::Exception::ServiceError => e
+          raise BarzahlenV2::Error.generate_error_from_response("Was not returned by Grac",e.body)
         end
 
         check_bz_response_for_failure(result)
@@ -61,16 +68,14 @@ module BarzahlenV2
 
     def self.generate_bz_signature(request_host_header, request_method, request_date_header,
       request_host_path = "", request_query_string = "", request_body = "", request_idempotency_key = "")
-      request_body_digest = self.generate_sha256_digest(request_body)
+      request_body_digest = OpenSSL::Digest.hexdigest("SHA256", request_body)
+
+      puts request_body_digest
 
       raw_signature = "#{request_host_header}\n#{request_method.upcase}\n#{request_host_path}\n#{request_query_string}\n"\
         "#{request_date_header}\n#{request_idempotency_key}\n#{request_body_digest}"
 
       OpenSSL::HMAC.hexdigest("SHA256", BarzahlenV2::configuration.payment_key, raw_signature)
-    end
-
-    def self.generate_sha256_digest(string_to_hash)
-      request_body_digest = OpenSSL::Digest.digest("SHA256", string_to_hash.to_s)
     end
   end
 end
