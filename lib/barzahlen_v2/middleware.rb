@@ -1,6 +1,6 @@
 require "openssl"
 require "uri"
-require "date"
+require "time"
 
 module BarzahlenV2
   module Middleware
@@ -11,16 +11,17 @@ module BarzahlenV2
       end
 
       def call (opts, request_uri, method, params, body)
-        request_host_header = URI.parse(request_uri).host
+        parsed_uri = URI.parse(request_uri)
+        request_host_header = parsed_uri.host
         request_method = method
-        request_host_path = URI.parse(request_uri).path
+        request_host_path = parsed_uri.path
         request_query_string = URI.encode_www_form(params)
         request_idempotency_key = opts[:headers]["Idempotency-Key"]
         # Prepare the Date header
-        request_date_header = DateTime.new.strftime("%a, %d %b %Y %H:%M:%S %Z")
+        request_date_header = Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z")
 
         signature = BarzahlenV2::Middleware.generate_bz_signature(
-          request_host_header,
+          request_host_header + ":" + parsed_uri.port.to_s,
           request_method,
           request_date_header,
           request_host_path,
@@ -30,18 +31,16 @@ module BarzahlenV2
           )
 
         # Attach the Date, Authorization and Host to the request
-        signature_headers = {
-            headers: {
+        new_headers =  opts[:headers].merge({
               Date: request_date_header,
               Authorization: "BZ1-HMAC-SHA256 DivisionId=#{BarzahlenV2.configuration.division_id}, Signature=#{signature}",
               Host: request_host_header,
-            }
-          }
+            })
 
         begin
-          result = @request.call(opts[:headers].merge(signature_headers), request_uri, method, params, body)
+          result = @request.call({headers: new_headers}, request_uri, method, params, body)
         rescue Grac::Exception::RequestFailed => e
-          raise BarzahlenV2::Error.generate_error_from_response(0,e.body)
+          raise BarzahlenV2::Error.generate_error_from_response(0,"")
         rescue Grac::Exception::BadRequest => e
           raise BarzahlenV2::Error.generate_error_from_response(400,e.body)
         rescue Grac::Exception::Forbidden => e
@@ -66,8 +65,14 @@ module BarzahlenV2
       end
     end
 
-    def self.generate_bz_signature(request_host_header, request_method, request_date_header,
-      request_host_path = "", request_query_string = "", request_body = "", request_idempotency_key = "")
+    def self.generate_bz_signature(
+      request_host_header,
+      request_method,
+      request_date_header,
+      request_host_path = "",
+      request_query_string = "",
+      request_body = "",
+      request_idempotency_key = "")
       request_body_digest = OpenSSL::Digest.hexdigest("SHA256", request_body)
 
       raw_signature = "#{request_host_header}\n#{request_method.upcase}\n#{request_host_path}\n#{request_query_string}\n"\
