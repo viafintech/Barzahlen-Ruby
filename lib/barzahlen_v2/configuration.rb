@@ -13,4 +13,20 @@ module BarzahlenV2
       @payment_key = "not_valid_payment_key"
     end
   end
+
+  class << self
+    attr_accessor :configuration
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def reset
+      @configuration = Configuration.new
+    end
+
+    def configure
+      yield(configuration)
+    end
+  end
 end
