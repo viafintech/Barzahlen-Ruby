@@ -2,21 +2,7 @@ require "json"
 
 module BarzahlenV2
   module Error
-    class ArgumentMissing < StandardError
-      attr_reader :argument
-
-      def initialize(argument = [])
-        @argument = argument
-      end
-
-      def message
-        return "One or all MissingArgument(s): '#{argument.join("','")}'"
-      end
-
-      alias_method :to_s, :message
-    end
-
-    class SignatureError < StandardError
+    class ClientError < StandardError
       attr_reader :error_message
 
       def initialize(error_message)
@@ -30,50 +16,98 @@ module BarzahlenV2
       alias_method :to_s, :message
     end
 
+    class SignatureError < ClientError; end
+
     class ApiError < StandardError
       attr_reader :http_status, :error_class, :error_code, :error_message, :documentation_url, :request_id
 
-      def initialize(http_status, error_class, error_code, message, documentation_url, request_id)
+      def initialize(http_status, error_hash = {})
         @http_status = http_status.to_s
-        @error_class = error_class
-        @error_code = error_code
-        @error_message = message
-        @documentation_url = documentation_url
-        @request_id = request_id
+        @error_class = error_hash[:error_class]
+        @error_code = error_hash[:error_code]
+        @error_message = error_hash[:message]
+        @documentation_url = error_hash[:documentation_url]
+        @request_id = error_hash[:request_id]
       end
 
       def message
-        return "Error occured with: #{@error_message} "\
-               "Http Status Code: #{@http_status} "\
-               "Barzahlen Error Code: #{@error_code} "\
-               "Please look for help on: #{@documentation_url} "\
+        return "Error occured with: #{@error_message}\n"\
+               "Http Status Code: #{@http_status}\n"\
+               "Barzahlen Error Code: #{@error_code}\n"\
+               "Please look for help on: #{@documentation_url}\n"\
                "Your request_id is: #{@request_id}"
       end
 
       alias_method :to_s, :message
     end
 
+    class AuthError < ApiError ; end
+    class TransportError < ApiError; end
+    class IdempotencyError < ApiError; end
+    class RateLimitError < ApiError; end
+    class InvalidFormatError < ApiError; end
+    class InvalidStateError < ApiError; end
+    class InvalidParameterError < ApiError; end
+    class NotAllowedError < ApiError; end
+    class ServerError < ApiError; end
+    class UnexpectedError < ApiError; end
+
     # This generates ApiErrors based on the response error classes of CPS
     def self.generate_error_from_response(http_status, response_body)
       error_hash = generate_error_hash_with_symbols(response_body)
 
-      error_class_name = error_hash[:error_class].capitalize.tr(" ","_")
-
-      begin
-        BarzahlenV2::Error.const_get(error_class_name)
-      rescue NameError
-        error_class = Class.new(ApiError)
-        BarzahlenV2::Error.const_set error_class_name, error_class
-      end
-
-      BarzahlenV2::Error.const_get(error_class_name).new(
+      case error_hash[:error_class]
+      when /auth/
+        return AuthError.new(
         http_status,
-        error_hash[:error_class],
-        error_hash[:error_code],
-        error_hash[:message],
-        error_hash[:documentation_url],
-        error_hash[:request_id]
+        error_hash
         )
+      when /transport/
+        return TransportError.new(
+        http_status,
+        error_hash
+        )
+      when /idempotency/
+        return IdempotencyError.new(
+        http_status,
+        error_hash
+        )
+      when /rate_limit/
+        return RateLimitError.new(
+        http_status,
+        error_hash
+        )
+      when /invalid_format/
+        return InvalidFormatError.new(
+        http_status,
+        error_hash
+        )
+      when /invalid_state/
+        return InvalidStateError.new(
+        http_status,
+        error_hash
+        )
+      when /invalid_parameter/
+        return InvalidParameterError.new(
+        http_status,
+        error_hash
+        )
+      when /not_allowed/
+        return NotAllowedError.new(
+        http_status,
+        error_hash
+        )
+      when /server_error/
+        return ServerError.new(
+        http_status,
+        error_hash
+        )
+      else
+        return UnexpectedError.new(
+        http_status,
+        error_hash
+        )
+      end
     end
 
     private
