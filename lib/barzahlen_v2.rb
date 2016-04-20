@@ -1,10 +1,10 @@
 require "grac"
 
-require "barzahlen_v2/version"
-require "barzahlen_v2/error"
-require "barzahlen_v2/configuration"
-require "barzahlen_v2/middleware"
-require "barzahlen_v2/online"
+require_relative "./barzahlen_v2/version"
+require_relative "./barzahlen_v2/error"
+require_relative "./barzahlen_v2/configuration"
+require_relative "./barzahlen_v2/middleware"
+require_relative "./barzahlen_v2/online"
 
 module BarzahlenV2
   class << self
