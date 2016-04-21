@@ -11,7 +11,7 @@
 [api_v2_documentation_update]: https://integration.barzahlen.de/en/api#update-slip
 [api_v2_documentation_resend]: https://integration.barzahlen.de/en/api#resend-email-text-message
 [api_v2_documentation_invalidate]: https://integration.barzahlen.de/en/api#invalidate-slip
-[rails_response]: http://edgeguides.rubyonrails.org/action_controller_overview.html#the-response-object
+[rails_request]: http://guides.rubyonrails.org/action_controller_overview.html#the-request-object
 
 # Barzahlen Ruby API Client
 
@@ -355,11 +355,11 @@ For a full list of all response variables please refer to the [Barzahlen API V2 
 ### Webhook Handling
 
 When a slip is paid or expires a webhook request is issued to the url you provided individually in the slip or in the [Barzahlen Control Center App][control_center_app]. In sandbox mode you can manually trigger a paid or expired webhook request in the [Barzahlen Control Center App][control_center_app].  
-The webhook request is also signed as normal requests to the api with the aforementioned _Payment Key_. But don't worry about the signature check because this library will take care of it.  
+The webhook request is also signed as normal requests to the api with the aforementioned _Payment Key_. But don't worry about the signature check because this library will take care of it. If the signature check is not failing a **BarzahlenV2::Error::SignatureError** is raised.  
 Be aware that the Barzahlen API is checking your **HTTPS server certificate** when issueing a webhook request, so make sure you have a server certificate which is accepted by common browsers.  
 For further documentation please refer to the [webhooks Barzahlen API documentation][api_v2_documentation_webhooks]
 
-The notification handling is expecting a standard [rails response][rails-response] object:
+The notification handling is expecting a standard [rails request][rails_request] object:
 
 ```Ruby
 response_hash = BarzahlenV2.webhook_request(response)
@@ -410,7 +410,20 @@ Example hash return:
 
 Errors will be generated and raised based on the [Barzahlen API V2 error response][api_v2_documentation_error] information.
 
-The error_class, which is explained on [Barzahlen API V2 Documentation][api_v2_documentation_error], will be used as the class name of the error.
+The error_class, which is explained on [Barzahlen API V2 Documentation][api_v2_documentation_error], will be used as the class name of the error as following:
+
+* BarzahlenV2::Error::AuthError
+* BarzahlenV2::Error::TransportError
+* BarzahlenV2::Error::IdempotencyError
+* BarzahlenV2::Error::RateLimitError
+* BarzahlenV2::Error::InvalidFormatError
+* BarzahlenV2::Error::InvalidStateError
+* BarzahlenV2::Error::InvalidParameterError
+* BarzahlenV2::Error::NotAllowedError
+* BarzahlenV2::Error::ServerError
+* BarzahlenV2::Error::UnexpectedError -> Is raised when no interpretation of the error response was impossible
+
+All these Errors are of type BarzahlenV2::Error::ApiError.
 
 If the interpretation was successful you will get an error where you can access the information following
 
@@ -421,5 +434,3 @@ error.message # The message which describes the specific error
 error.documentation_url # The documentation url which you can refer to for debugging
 error.request_id # The request id which can be used to tell us if we need to help you finding an issue
 ```
-
-If an interpretation was unsuccesful a **BarzahlenV2::Error::UnexpectedError** will be raised.
