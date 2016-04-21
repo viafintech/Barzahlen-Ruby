@@ -15,7 +15,7 @@
 
 # Barzahlen Ruby API Client
 
-The official ruby gem for accessing the new Barzahlen (CPS) Barzahlen API V2.
+The official ruby gem for accessing the new Barzahlen (CPS) API V2.
 
 ## Installation
 
@@ -55,8 +55,8 @@ Example configuration:
 ```Ruby
 BarzahlenV2.configure do |config|
   config.sandbox = false
-  config.division_id = "20065"
-  config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
+  config.division_id = "12345"
+  config.payment_key = "123456789abcdef123456789abcdef123456789a"
 end
 ```
 
@@ -71,7 +71,7 @@ Per default the ssl connection-endpoints of the Barzahlen Barzahlen API V2 are u
 
 Per default this client lib is also supporting idempotency. An idempotent request is simply sending the same request again. This is very very useful if a network failure happens, our system fails to process your request or you exceed your [rate limit][api_v2_documentation_rate_limit] and you can simply resend the request.  
 For further documentation please refer to the [Barzahlen API V2 Documentation][api_v2_documentation_idempotency].  
-A slip object has idempotency built in and can be retried (**create**d) as often as it is needed as far as the same object is taken.
+A slip object has idempotency built in and can be retried (**create**d) as often as it is needed as long as the same object is taken.
 
 ## Functionality (production and sandbox)
 
@@ -87,7 +87,7 @@ end
 
 ### Basic Functionality
 
-Following is happening during a request:  
+The following is happening during a request:  
 1. The signature, based on the _division id_ and _payment key_ provided, will get created (for the signature creation please refer to [Barzahlen API V2 Signature Documentation][api_v2_documentation_signature])  
 2. A https-request is send to the barzahlen api endpoint  
 3. The response is evaluated  
@@ -158,39 +158,22 @@ bz_new_payment_slip.create
 The only difference for creating a refund or payment is by supplying either "payment" or "refund" as slip_type.  
 All required and applicable variables for a refund or payment slip is well documented in the [Barzahlen API V2 slip creation Documentation][api_v2_documentation_slip].
 
-The slip_object.**create** will return a ruby hash which can look the following:
+Requests are made by the client lib as the [documentation][api_v2_documentation_slip] is suggesting.
 
-```Ruby
-{
-  "id" => "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
-  "slip_type" => "payment",
-  "division_id" => "1234",
-  "reference_key" => "O64737X",
-  "hook_url" => "https://psp.example.com/hook",
-  "expires_at" => "2016-01-10T12:34:56Z",
-  "customer" => {
-    "key" => "LDFKHSLFDHFL",
-    "cell_phone_last_4_digits" => "6789",
-    "email" => "john@example.com",
-    "language" => "de-DE"
-  },
-  "checkout_token" => "djF8Y2hrdHxzbHAtMTM4ZWI3NzUtOWY5Yy00NzYwLWI4ZTAtYTNlZWNmYjQ5M2IxfElBSThZMnd6SFYwbjJpMm9aSUpvREpnYnhNS3c5Z2x3elJOanlLblZJeFk9",
-  "metadata" => {
-    "order_id" => "1234",
-    "invoice_no" => "A123"
-  },
-  "transactions" => [
-    {
-      "id" => "4729294329",
-      "currency" => "EUR",
-      "amount" => "123.34",
-      "state" => "pending"
-    }
-  ]
-}
-```
+For all slip types the following variables are required:
+- slip_type
+- transactions/currency
+- transactions/amount
 
-A full list of all response variables is also available in the [documentation][api_v2_documentation_slip]
+Additionally for **Payment** the following variables are required:
+- customer/key
+- transactions/amount needs to be positive
+
+Additionally for **Refund** the following variables are required:
+- transactions/amount needs to be negative
+- show_stores_near can be provided
+
+A full list of all response variables is available in the [documentation][api_v2_documentation_slip]
 
 ### Retrieve Slip
 
