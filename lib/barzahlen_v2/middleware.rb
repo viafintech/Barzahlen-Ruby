@@ -6,36 +6,39 @@ module BarzahlenV2
   module Middleware
     class Signature
       def initialize(request, *settings)
-        @request = request
+        @request  = request
         @settings = settings
       end
 
       def call (opts, request_uri, method, params, body)
-        parsed_uri = URI.parse(request_uri)
-        request_host_header = parsed_uri.host
-        request_method = method
-        request_host_path = parsed_uri.path
-        request_query_string = URI.encode_www_form(params)
+        parsed_uri              = URI.parse(request_uri)
+        request_host_header     = parsed_uri.host
+        request_method          = method
+        request_host_path       = parsed_uri.path
+        request_query_string    = URI.encode_www_form(params)
         request_idempotency_key = opts[:headers]["Idempotency-Key"]
         # Prepare the Date header
-        request_date_header = Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z")
+        request_date_header     = Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-        signature = BarzahlenV2::Middleware.generate_bz_signature(
-          request_host_header + ":" + parsed_uri.port.to_s,
-          request_method,
-          request_date_header,
-          request_host_path,
-          request_query_string,
-          body,
-          request_idempotency_key
-          )
+        signature               = BarzahlenV2::Middleware.generate_bz_signature(
+                                    request_host_header + ":" + parsed_uri.port.to_s,
+                                    request_method,
+                                    request_date_header,
+                                    request_host_path,
+                                    request_query_string,
+                                    body,
+                                    request_idempotency_key
+                                  )
 
         # Attach the Date, Authorization and Host to the request
-        new_headers =  opts[:headers].merge({
+        new_headers =  opts[:headers].merge(
+          {
               Date: request_date_header,
-              Authorization: "BZ1-HMAC-SHA256 DivisionId=#{BarzahlenV2.configuration.division_id}, Signature=#{signature}",
+              Authorization: "BZ1-HMAC-SHA256 DivisionId=#{BarzahlenV2.configuration.division_id}"\
+                ", Signature=#{signature}",
               Host: request_host_header,
-            })
+          }
+        )
 
         begin
           result = @request.call({headers: new_headers}, request_uri, method, params, body)
@@ -73,10 +76,16 @@ module BarzahlenV2
       request_query_string = "",
       request_body = "",
       request_idempotency_key = "")
+
       request_body_digest = OpenSSL::Digest.hexdigest("SHA256", request_body)
 
-      raw_signature = "#{request_host_header}\n#{request_method.upcase}\n#{request_host_path}\n"\
-      "#{request_query_string}\n#{request_date_header}\n#{request_idempotency_key}\n#{request_body_digest}"
+      raw_signature = "#{request_host_header}\n"\
+                      "#{request_method.upcase}\n"\
+                      "#{request_host_path}\n"\
+                      "#{request_query_string}\n"\
+                      "#{request_date_header}\n"\
+                      "#{request_idempotency_key}\n"\
+                      "#{request_body_digest}"
 
       OpenSSL::HMAC.hexdigest("SHA256", BarzahlenV2::configuration.payment_key, raw_signature)
     end
