@@ -19,15 +19,13 @@ module BarzahlenV2
     class SignatureError < ClientError; end
 
     class ApiError < StandardError
-      attr_reader :http_status
       attr_reader :error_class
       attr_reader :error_code
       attr_reader :error_message
       attr_reader :documentation_url
       attr_reader :request_id
 
-      def initialize(http_status, error_hash = {})
-        @http_status = http_status.to_s
+      def initialize(error_hash = {})
         @error_class = error_hash[:error_class]
         @error_code = error_hash[:error_code]
         @error_message = error_hash[:message]
@@ -37,7 +35,6 @@ module BarzahlenV2
 
       def message
         return "Error occured with: #{@error_message}\n"\
-               "Http Status Code: #{@http_status}\n"\
                "Barzahlen Error Code: #{@error_code}\n"\
                "Please look for help on: #{@documentation_url}\n"\
                "Your request_id is: #{@request_id}"
@@ -58,60 +55,30 @@ module BarzahlenV2
     class UnexpectedError       < ApiError; end
 
     # This generates ApiErrors based on the response error classes of CPS
-    def self.generate_error_from_response(http_status, response_body)
+    def self.generate_error_from_response(response_body)
       error_hash = generate_error_hash_with_symbols(response_body)
 
       case error_hash[:error_class]
-      when /auth/
-        return  AuthError.new(
-                  http_status,
-                  error_hash
-                )
-      when /transport/
-        return  TransportError.new(
-                  http_status,
-                  error_hash
-                )
-      when /idempotency/
-        return  IdempotencyError.new(
-                  http_status,
-                  error_hash
-                )
-      when /rate_limit/
-        return  RateLimitError.new(
-                  http_status,
-                  error_hash
-                )
-      when /invalid_format/
-        return  InvalidFormatError.new(
-                  http_status,
-                  error_hash
-                )
-      when /invalid_state/
-        return  InvalidStateError.new(
-                  http_status,
-                  error_hash
-                )
-      when /invalid_parameter/
-        return  InvalidParameterError.new(
-                  http_status,
-                  error_hash
-                )
-      when /not_allowed/
-        return  NotAllowedError.new(
-                  http_status,
-                  error_hash
-                )
-      when /server_error/
-        return  ServerError.new(
-                  http_status,
-                  error_hash
-                )
+      when "auth"
+        return  AuthError.new( error_hash )
+      when "transport"
+        return  TransportError.new( error_hash )
+      when "idempotency"
+        return  IdempotencyError.new( error_hash )
+      when "rate_limit"
+        return  RateLimitError.new( error_hash )
+      when "invalid_format"
+        return  InvalidFormatError.new( error_hash )
+      when "invalid_state"
+        return  InvalidStateError.new( error_hash )
+      when "invalid_parameter"
+        return  InvalidParameterError.new( error_hash )
+      when "not_allowed"
+        return  NotAllowedError.new( error_hash )
+      when "server_error"
+        return  ServerError.new( error_hash )
       else
-        return  UnexpectedError.new(
-                  http_status,
-                  error_hash
-                )
+        return  UnexpectedError.new( error_hash )
       end
     end
 
