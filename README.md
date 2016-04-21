@@ -362,7 +362,7 @@ For further documentation please refer to the [webhooks Barzahlen API documentat
 The notification handling is expecting a standard [rails request][rails_request] object:
 
 ```Ruby
-response_hash = BarzahlenV2.webhook_request(response)
+request_hash = BarzahlenV2.webhook_request(request)
 ```
 
 Following can happen:
