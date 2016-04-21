@@ -171,56 +171,76 @@ module BarzahlenV2
             "Host" => "callback.example.com",
             "Date" => "Fri, 01 Apr 2016 09:20:06 GMT",
             "Bz-Signature" => "BZ1-HMAC-SHA256 eb22cda264a5cf5a138e8ac13f0aa8da2daf28c687d9db46872cf777f0decc04",
-            "Content-Type" => "application/json",
+            "Content-Type" => "application/json;charset=utf-8",
             "Bz-Hook-Format" => "v2"
           }
           @location = "/barzahlen/callback"
           @body = '{
-  "event": "paid",
-  "event_occurred_at": "2016-01-06T12:34:56Z",
-  "affected_transaction_id": "4729294329",
-  "slip": {
-      "id": "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
-      "slip_type": "payment",
-      "division_id": "1234",
-      "reference_key": "O64737X",
-      "expires_at": "2016-01-10T12:34:56Z",
-      "customer": {
-          "key": "LDFKHSLFDHFL",
-          "cell_phone_last_4_digits": "6789",
-          "email": "john@example.com",
-          "language": "de-DE"
-      },
-      "metadata": {
-        "order_id": 1234,
-        "invoice_no": "A123"
-      },
-      "transactions": [
-        {
-          "id": "4729294329",
-          "currency": "EUR",
-          "amount": "123.34",
-          "state": "paid"
-        }
-      ]
-  }
+    "event": "paid",
+    "event_occurred_at": "2016-01-06T12:34:56Z",
+    "affected_transaction_id": "4729294329",
+    "slip": {
+        "id": "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
+        "slip_type": "payment",
+        "division_id": "1234",
+        "reference_key": "O64737X",
+        "expires_at": "2016-01-10T12:34:56Z",
+        "customer": {
+            "key": "LDFKHSLFDHFL",
+            "cell_phone_last_4_digits": "6789",
+            "email": "john@example.com",
+            "language": "de-DE"
+        },
+        "metadata": {
+          "order_id": 1234,
+          "invoice_no": "A123"
+        },
+        "transactions": [
+          {
+            "id": "4729294329",
+            "currency": "EUR",
+            "amount": "123.34",
+            "state": "paid"
+          }
+        ]
+    }
 }'
         end
       }.new
     }
 
     before do
-
-    end
-
-    it "takes response and returns a hash to work with" do
       BarzahlenV2.configure do |config|
         config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
       end
+    end
 
+    it "takes response and returns a hash to work with" do
       expect {
         BarzahlenV2.webhook_request(response)
       }.to_not raise_error
+    end
+
+    it "refuses if the api version is v1 and returns nil" do
+      response.headers["Bz-Hook-Format"] = "v1"
+      expect(BarzahlenV2.webhook_request(response)).to eq(nil)
+    end
+
+    it "refuses if the content type is not application/json and returns nil" do
+      response.headers["Content-Type"] = "Chewbacca"
+      expect(BarzahlenV2.webhook_request(response)).to eq(nil)
+    end
+
+    it "refuses if the signature is invalid and raises exception" do
+      response.headers["Host"] = "Unknown"
+      expect{
+        BarzahlenV2.webhook_request(response)
+        }.to raise_error(BarzahlenV2::Error::SignatureError)
+    end
+
+    it "succeeds and returns valid Hash" do
+      valid_hash = BarzahlenV2.webhook_request(response)
+      expect(valid_hash).to be_an(Hash)
     end
   end
 end
