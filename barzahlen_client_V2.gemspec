@@ -25,5 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec_junit_formatter",   "~> 0.2.2"
   spec.add_development_dependency "rack-test",               "~> 0.6.3"
 
-  spec.add_runtime_dependency "grac",                        "~> 2.2.0"
+  spec.add_runtime_dependency "grac",                        "~> 2.2.1"
 end

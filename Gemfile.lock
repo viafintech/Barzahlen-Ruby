@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     barzahlen_v2 (0.0.1)
-      grac (~> 2.2.0)
+      grac (~> 2.2.1)
 
 GEM
   remote: http://rubygems.org/
@@ -12,7 +12,7 @@ GEM
     ethon (0.8.1)
       ffi (>= 1.3.0)
     ffi (1.9.10)
-    grac (2.2.0)
+    grac (2.2.1)
       typhoeus (~> 0.6.9)
     rack (1.6.4)
     rack-test (0.6.3)
