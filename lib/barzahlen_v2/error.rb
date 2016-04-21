@@ -19,7 +19,12 @@ module BarzahlenV2
     class SignatureError < ClientError; end
 
     class ApiError < StandardError
-      attr_reader :http_status, :error_class, :error_code, :error_message, :documentation_url, :request_id
+      attr_reader :http_status
+      attr_reader :error_class
+      attr_reader :error_code
+      attr_reader :error_message
+      attr_reader :documentation_url
+      attr_reader :request_id
 
       def initialize(http_status, error_hash = {})
         @http_status = http_status.to_s
@@ -41,16 +46,16 @@ module BarzahlenV2
       alias_method :to_s, :message
     end
 
-    class AuthError < ApiError ; end
-    class TransportError < ApiError; end
-    class IdempotencyError < ApiError; end
-    class RateLimitError < ApiError; end
-    class InvalidFormatError < ApiError; end
-    class InvalidStateError < ApiError; end
+    class AuthError             < ApiError ; end
+    class TransportError        < ApiError; end
+    class IdempotencyError      < ApiError; end
+    class RateLimitError        < ApiError; end
+    class InvalidFormatError    < ApiError; end
+    class InvalidStateError     < ApiError; end
     class InvalidParameterError < ApiError; end
-    class NotAllowedError < ApiError; end
-    class ServerError < ApiError; end
-    class UnexpectedError < ApiError; end
+    class NotAllowedError       < ApiError; end
+    class ServerError           < ApiError; end
+    class UnexpectedError       < ApiError; end
 
     # This generates ApiErrors based on the response error classes of CPS
     def self.generate_error_from_response(http_status, response_body)
@@ -58,55 +63,55 @@ module BarzahlenV2
 
       case error_hash[:error_class]
       when /auth/
-        return AuthError.new(
-        http_status,
-        error_hash
-        )
+        return  AuthError.new(
+                  http_status,
+                  error_hash
+                )
       when /transport/
-        return TransportError.new(
-        http_status,
-        error_hash
-        )
+        return  TransportError.new(
+                  http_status,
+                  error_hash
+                )
       when /idempotency/
-        return IdempotencyError.new(
-        http_status,
-        error_hash
-        )
+        return  IdempotencyError.new(
+                  http_status,
+                  error_hash
+                )
       when /rate_limit/
-        return RateLimitError.new(
-        http_status,
-        error_hash
-        )
+        return  RateLimitError.new(
+                  http_status,
+                  error_hash
+                )
       when /invalid_format/
-        return InvalidFormatError.new(
-        http_status,
-        error_hash
-        )
+        return  InvalidFormatError.new(
+                  http_status,
+                  error_hash
+                )
       when /invalid_state/
-        return InvalidStateError.new(
-        http_status,
-        error_hash
-        )
+        return  InvalidStateError.new(
+                  http_status,
+                  error_hash
+                )
       when /invalid_parameter/
-        return InvalidParameterError.new(
-        http_status,
-        error_hash
-        )
+        return  InvalidParameterError.new(
+                  http_status,
+                  error_hash
+                )
       when /not_allowed/
-        return NotAllowedError.new(
-        http_status,
-        error_hash
-        )
+        return  NotAllowedError.new(
+                  http_status,
+                  error_hash
+                )
       when /server_error/
-        return ServerError.new(
-        http_status,
-        error_hash
-        )
+        return  ServerError.new(
+                  http_status,
+                  error_hash
+                )
       else
-        return UnexpectedError.new(
-        http_status,
-        error_hash
-        )
+        return  UnexpectedError.new(
+                  http_status,
+                  error_hash
+                )
       end
     end
 
@@ -129,11 +134,11 @@ module BarzahlenV2
           error_hash = Hash.new
         end
 
-        error_hash[:error_class] ||= "Unexpected_Error"
-        error_hash[:error_code] ||= "Unknown error code (body): \"#{body.to_s}\""
-        error_hash[:message] ||= "Please contact CPS to help us fix that as soon as possible."
+        error_hash[:error_class]       ||= "Unexpected_Error"
+        error_hash[:error_code]        ||= "Unknown error code (body): \"#{body.to_s}\""
+        error_hash[:message]           ||= "Please contact CPS to help us fix that as soon as possible."
         error_hash[:documentation_url] ||= "https://www.cashpaymentsolutions.com/de/geschaeftskunden/kontakt"
-        error_hash[:request_id] ||= "not_available"
+        error_hash[:request_id]        ||= "not_available"
 
         error_hash
       end
