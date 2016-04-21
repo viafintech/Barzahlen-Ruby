@@ -43,20 +43,14 @@ module BarzahlenV2
         begin
           result = @request.call({headers: new_headers}, request_uri, method, params, body)
         rescue Grac::Exception::RequestFailed => e
-          raise BarzahlenV2::Error.generate_error_from_response(0,"")
-        rescue Grac::Exception::BadRequest => e
-          raise BarzahlenV2::Error.generate_error_from_response(400,e.body)
-        rescue Grac::Exception::Forbidden => e
-          raise BarzahlenV2::Error.generate_error_from_response(403,e.body)
-        rescue Grac::Exception::NotFound => e
-          raise BarzahlenV2::Error.generate_error_from_response(404,e.body)
-        rescue Grac::Exception::Conflict => e
-          raise BarzahlenV2::Error.generate_error_from_response(409,e.body)
-        rescue Grac::Exception::ServiceError => e
-          raise BarzahlenV2::Error.generate_error_from_response("Was not returned by Grac",e.body)
+          raise BarzahlenV2::Error.generate_error_from_response("")
+        rescue  Grac::Exception::BadRequest,
+                Grac::Exception::Forbidden,
+                Grac::Exception::NotFound,
+                Grac::Exception::Conflict,
+                Grac::Exception::ServiceError => e
+          raise BarzahlenV2::Error.generate_error_from_response(e.body)
         end
-
-        check_bz_response_for_failure(result)
 
         return result
       end
