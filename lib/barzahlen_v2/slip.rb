@@ -46,32 +46,31 @@ module BarzahlenV2
 
   # Handle a webhook request
 
-  def self.webhook_request(response)
-    bz_hook_format = response.headers["Bz-Hook-Format"]
+  def self.webhook_request(request)
+    bz_hook_format = request.headers["Bz-Hook-Format"]
 
     #stop processing when bz-hook-format = v1 because it will be send as v2 again
     if bz_hook_format.include? "v1"
       return nil
     end
 
-    content_type = response.headers["Content-Type"]
+    content_type = request.headers["Content-Type"]
 
     if ! content_type.include? "application/json"
       return nil
     end
 
     signature = BarzahlenV2::Middleware.generate_bz_signature(
-      response.headers["Host"] + ":443",
-      "POST",
-      response.headers["Date"],
-      response.location,
+      request.headers["Host"] + ":" + request.port,
+      request.method.upcase,
+      request.headers["Date"],
+      request.fullpath.split("?")[0] || request.fullpath,
       "",
-      response.body,
-      ""
+      request.body
       )
 
-    if response.headers["Bz-Signature"].include? signature
-      return JSON.parse(response.body)
+    if request.headers["Bz-Signature"].include? signature
+      return JSON.parse(request.body)
     else
       raise BarzahlenV2::Error::SignatureError.new("Signature not valid")
     end

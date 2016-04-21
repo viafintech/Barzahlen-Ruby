@@ -152,7 +152,7 @@ module BarzahlenV2
       @@grac_client = nil
     end
 
-    it "does not accept nil slip_id" do
+    it "set the grac_client client correctly" do
       request_client = double("Dummy Request Client")
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect(request_client).to receive(:path).with("/slips/{id}/invalidate", {:id=>"1"}).and_return(request_client)
@@ -162,9 +162,9 @@ module BarzahlenV2
   end
 
   describe "Webhook request" do
-    let(:response) {
+    let(:request) {
       return Class.new {
-        attr_accessor :headers, :location, :body
+        attr_accessor :headers, :fullpath, :body, :port, :method
 
         def initialize
           @headers = {
@@ -174,7 +174,9 @@ module BarzahlenV2
             "Content-Type" => "application/json;charset=utf-8",
             "Bz-Hook-Format" => "v2"
           }
-          @location = "/barzahlen/callback"
+          @fullpath = "/barzahlen/callback"
+          @port = "443"
+          @method = "POST"
           @body = '{
     "event": "paid",
     "event_occurred_at": "2016-01-06T12:34:56Z",
@@ -215,31 +217,31 @@ module BarzahlenV2
       end
     end
 
-    it "takes response and returns a hash to work with" do
+    it "takes request and returns a hash to work with" do
       expect {
-        BarzahlenV2.webhook_request(response)
+        BarzahlenV2.webhook_request(request)
       }.to_not raise_error
     end
 
     it "refuses if the api version is v1 and returns nil" do
-      response.headers["Bz-Hook-Format"] = "v1"
-      expect(BarzahlenV2.webhook_request(response)).to eq(nil)
+      request.headers["Bz-Hook-Format"] = "v1"
+      expect(BarzahlenV2.webhook_request(request)).to eq(nil)
     end
 
     it "refuses if the content type is not application/json and returns nil" do
-      response.headers["Content-Type"] = "Chewbacca"
-      expect(BarzahlenV2.webhook_request(response)).to eq(nil)
+      request.headers["Content-Type"] = "Chewbacca"
+      expect(BarzahlenV2.webhook_request(request)).to eq(nil)
     end
 
     it "refuses if the signature is invalid and raises exception" do
-      response.headers["Host"] = "Unknown"
+      request.headers["Host"] = "Unknown"
       expect{
-        BarzahlenV2.webhook_request(response)
+        BarzahlenV2.webhook_request(request)
         }.to raise_error(BarzahlenV2::Error::SignatureError)
     end
 
     it "succeeds and returns valid Hash" do
-      valid_hash = BarzahlenV2.webhook_request(response)
+      valid_hash = BarzahlenV2.webhook_request(request)
       expect(valid_hash).to be_an(Hash)
     end
   end
