@@ -18,12 +18,33 @@ module BarzahlenV2
 
       end
 
+      it "checks if the header formating is correct" do
+        request = double("Dummy Request")
+
+        expect(request).to receive(:call).with(
+          {
+            headers: {
+              Date: a_string_matching(/[A-Z][a-z]{2}, [0-9]{2} [A-Z][a-z]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT/),
+              Authorization: a_string_matching(/BZ1-HMAC-SHA256 DivisionId=12345, Signature=[0-9a-f]*/),
+              Host: a_string_matching(/[a-zA-Z.:0-9]/)
+            }
+          },
+          @request_uri,
+          @request_method,
+          {},
+          ""
+          )
+
+        signature = Signature.new(request,BarzahlenV2.configuration)
+        signature.call({ headers: {}},@request_uri,@request_method,{},"")
+      end
+
       it "generates the signature correctly" do
         date_dummy = double("Dummy Date")
         expect(date_dummy).to receive(:strftime).and_return(@date)
+        expect(date_dummy).to receive(:utc).and_return(date_dummy)
         expect(Time).to receive(:now).and_return(date_dummy)
         response = double("Dummy Response")
-        expect(response).to receive(:code).and_return("200")
 
         request = double("Dummy Request")
 
@@ -32,7 +53,7 @@ module BarzahlenV2
             headers: {
               Date: @date,
               Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=54295c2524a83e8067510a8b49c14089158162f47b202d5e6be57ee81b810542",
-              Host: "api.barzahlen.de"
+              Host: "api.barzahlen.de:443"
             }
           },
           @request_uri,
@@ -41,7 +62,7 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request)
+        signature = Signature.new(request,BarzahlenV2.configuration)
         signature.call({ headers: {}},@request_uri,@request_method,{},"")
       end
 
@@ -50,9 +71,9 @@ module BarzahlenV2
 
         date_dummy = double("Dummy Date")
         expect(date_dummy).to receive(:strftime).and_return(@date)
+        expect(date_dummy).to receive(:utc).and_return(date_dummy)
         expect(Time).to receive(:now).and_return(date_dummy)
         response = double("Dummy Response")
-        expect(response).to receive(:code).and_return("200")
 
         request = double("Dummy Request")
 
@@ -61,7 +82,7 @@ module BarzahlenV2
             headers: {
               Date: @date,
               Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=0b3b29ee6f126ffc01f6ab279e8d92119ce4ca758125db86777d20683bdec63e",
-              Host: "api.barzahlen.de",
+              Host: "api.barzahlen.de:443",
               "Idempotency-Key" => @idempotency_key
             }
           },
@@ -71,7 +92,7 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request)
+        signature = Signature.new(request,BarzahlenV2.configuration)
         signature.call({
           headers: {
             "Idempotency-Key" => @idempotency_key
@@ -82,9 +103,9 @@ module BarzahlenV2
       it "generates the signature correctly with one param" do
         date_dummy = double("Dummy Date")
         expect(date_dummy).to receive(:strftime).and_return(@date)
+        expect(date_dummy).to receive(:utc).and_return(date_dummy)
         expect(Time).to receive(:now).and_return(date_dummy)
         response = double("Dummy Response")
-        expect(response).to receive(:code).and_return("200")
 
         request = double("Dummy Request")
 
@@ -93,7 +114,7 @@ module BarzahlenV2
             headers: {
               Date: @date,
               Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=2688e8ddea8c85591239f45248463f04b1013783063cb20851e65e5513f3e602",
-              Host: "api.barzahlen.de",
+              Host: "api.barzahlen.de:443",
             }
           },
           @request_uri,
@@ -102,16 +123,16 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request)
+        signature = Signature.new(request,BarzahlenV2.configuration)
         signature.call({ headers: {} },@request_uri,@request_method,{ count: "2" },"")
       end
 
       it "generates the signature correctly with two param" do
         date_dummy = double("Dummy Date")
         expect(date_dummy).to receive(:strftime).and_return(@date)
+        expect(date_dummy).to receive(:utc).and_return(date_dummy)
         expect(Time).to receive(:now).and_return(date_dummy)
         response = double("Dummy Response")
-        expect(response).to receive(:code).and_return("200")
 
         request = double("Dummy Request")
 
@@ -120,7 +141,7 @@ module BarzahlenV2
             headers: {
               Date: @date,
               Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=5e5c482d13c9f298e39496273a6f2d56325a7d99727486b49ac9532fe72d62ed",
-              Host: "api.barzahlen.de",
+              Host: "api.barzahlen.de:443",
             }
           },
           @request_uri,
@@ -129,16 +150,16 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request)
+        signature = Signature.new(request,BarzahlenV2.configuration)
         signature.call({ headers: {} },@request_uri,@request_method,{ count: "2", foo: "bar" },"")
       end
 
       it "generates the signature correctly with body" do
         date_dummy = double("Dummy Date")
         expect(date_dummy).to receive(:strftime).and_return(@date)
+        expect(date_dummy).to receive(:utc).and_return(date_dummy)
         expect(Time).to receive(:now).and_return(date_dummy)
         response = double("Dummy Response")
-        expect(response).to receive(:code).and_return("200")
 
         request = double("Dummy Request")
 
@@ -147,7 +168,7 @@ module BarzahlenV2
             headers: {
               Date: @date,
               Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=66cd7fe64fbd25dc56aacf59055b363f9b41342dfb44f8348226ca9516bbd466",
-              Host: "api.barzahlen.de",
+              Host: "api.barzahlen.de:443",
             }
           },
           @request_uri,
@@ -156,74 +177,8 @@ module BarzahlenV2
           '{ "foo" : "bar", "bla": 123 }'
           ).and_return(response)
 
-        signature = Signature.new(request)
+        signature = Signature.new(request,BarzahlenV2.configuration)
         signature.call({ headers: {} },@request_uri,@request_method,{ },'{ "foo" : "bar", "bla": 123 }')
-      end
-
-      it "raises exception if 400 is returned" do
-        date_dummy = double("Dummy Date")
-        expect(date_dummy).to receive(:strftime).and_return(@date)
-        expect(Time).to receive(:now).and_return(date_dummy)
-        response = double("Dummy Response")
-        expect(response).to receive(:code).and_return("401").twice
-        expect(response).to receive(:body).and_return("oops")
-
-        request = double("Dummy Request")
-
-        expect(request).to receive(:call).and_return(response)
-
-        signature = Signature.new(request)
-        expect{
-            signature.call({ headers: {}},@request_uri,@request_method,{},"")
-          }.to raise_error { |error|
-            expect(error).to be_an(BarzahlenV2::Error::UnexpectedError)
-          }
-      end
-
-      it "raises correct exception if grac exception is raised" do
-        date_dummy = double("Dummy Date")
-        expect(date_dummy).to receive(:strftime).and_return(@date)
-        expect(Time).to receive(:now).and_return(date_dummy)
-
-        request = double("Dummy Request")
-
-        expect(request).to receive(:call).and_raise(
-          Grac::Exception::RequestFailed.new("Get","api.barzahlen.de", {
-            error_class: "invalid_parameter",
-            error_code: "invalid_slip_type",
-            message: "slip_type: slip_type is required",
-            request_id: "asdfasdfasdfasdf"
-            }.to_json.to_s))
-
-        signature = Signature.new(request)
-        expect{
-            signature.call({ headers: {}},@request_uri,@request_method,{},"")
-          }.to raise_error { |error|
-            expect(error).to be_an(BarzahlenV2::Error::UnexpectedError)
-          }
-      end
-
-      it "raises correct exception if grac exception is raised" do
-        date_dummy = double("Dummy Date")
-        expect(date_dummy).to receive(:strftime).and_return(@date)
-        expect(Time).to receive(:now).and_return(date_dummy)
-
-        request = double("Dummy Request")
-
-        expect(request).to receive(:call).and_raise(
-          Grac::Exception::Forbidden.new("Get","api.barzahlen.de", {
-            error_class: "auth",
-            error_code: "invalid_slip_type",
-            message: "slip_type: slip_type is required",
-            request_id: "asdfasdfasdfasdf"
-            }.to_json.to_s))
-
-        signature = Signature.new(request)
-        expect{
-            signature.call({ headers: {}},@request_uri,@request_method,{},"")
-          }.to raise_error { |error|
-            expect(error).to be_an(BarzahlenV2::Error::AuthError)
-          }
       end
     end
 
@@ -245,6 +200,7 @@ module BarzahlenV2
 
       it "generates the signature correctly with minimal setup" do
         signature = BarzahlenV2::Middleware.generate_bz_signature(
+          BarzahlenV2.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header
@@ -255,6 +211,7 @@ module BarzahlenV2
 
       it "generates the signature correctly with idempotency key" do
         signature = BarzahlenV2::Middleware.generate_bz_signature(
+          BarzahlenV2.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header,
@@ -273,6 +230,7 @@ module BarzahlenV2
         @request_body = "{\"foo\": \"bar\"}"
 
         signature = BarzahlenV2::Middleware.generate_bz_signature(
+          BarzahlenV2.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header,
@@ -328,6 +286,7 @@ module BarzahlenV2
         @request_idempotency_key = ""
 
         signature = BarzahlenV2::Middleware.generate_bz_signature(
+          BarzahlenV2.configuration.payment_key,
           @request_host_header_with_port,
           @request_method,
           @request_date_header,
@@ -354,6 +313,7 @@ module BarzahlenV2
         @request_idempotency_key = ""
 
         signature = BarzahlenV2::Middleware.generate_bz_signature(
+          BarzahlenV2.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header,
