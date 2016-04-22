@@ -18,30 +18,42 @@ module BarzahlenV2
       @request_hash.each do |key, value|
         @request_hash[key].freeze
       end
-      @request.path("/slips").post(@request_hash)
+      BarzahlenV2.execute_with_error_handling do
+        @request.path("/slips").post(@request_hash)
+      end
     end
   end
 
   #If idempotency is not important a simple request is more than enough
 
   def self.retrieve_slip(slip_id)
-    self.get_grac_client.path("/slips/{id}", id: slip_id.to_s).get
+    self.execute_with_error_handling do
+      self.get_grac_client.path("/slips/{id}", id: slip_id.to_s).get
+    end
   end
 
   def self.update_slip(slip_id, opts = {})
-    self.get_grac_client.path("/slips/{id}", id: slip_id.to_s).patch(opts)
+    self.execute_with_error_handling do
+      self.get_grac_client.path("/slips/{id}", id: slip_id.to_s).patch(opts)
+    end
   end
 
   def self.resend_email(slip_id)
-    self.get_grac_client.path("/slips/{id}/resend/email", id: slip_id.to_s).post
+    self.execute_with_error_handling do
+      self.get_grac_client.path("/slips/{id}/resend/email", id: slip_id.to_s).post
+    end
   end
 
   def self.resend_text_message(slip_id)
-    self.get_grac_client.path("/slips/{id}/resend/text_message", id: slip_id.to_s).post
+    self.execute_with_error_handling do
+      self.get_grac_client.path("/slips/{id}/resend/text_message", id: slip_id.to_s).post
+    end
   end
 
   def self.invalidate_slip(slip_id)
-    self.get_grac_client.path("/slips/{id}/invalidate", id: slip_id.to_s).post
+    self.execute_with_error_handling do
+      self.get_grac_client.path("/slips/{id}/invalidate", id: slip_id.to_s).post
+    end
   end
 
   # Handle a webhook request
@@ -61,6 +73,7 @@ module BarzahlenV2
     end
 
     signature = BarzahlenV2::Middleware.generate_bz_signature(
+      BarzahlenV2.configuration.payment_key,
       request.headers["Host"] + ":" + request.port,
       request.method.upcase,
       request.headers["Date"],
@@ -80,18 +93,31 @@ module BarzahlenV2
     @@grac_client = nil
 
     def self.get_grac_client(idempotency = false)
-      if !@@grac_client
-        @@grac_client = Grac::Client.new(
-          BarzahlenV2.configuration.sandbox ? BarzahlenV2::Configuration::API_HOST_SANDBOX :
+      @@grac_client ||= Grac::Client.new(
+          BarzahlenV2.configuration.sandbox ?
+            BarzahlenV2::Configuration::API_HOST_SANDBOX :
             BarzahlenV2::Configuration::API_HOST,
-          middleware: [BarzahlenV2::Middleware::Signature]
+          middleware: [ [ BarzahlenV2::Middleware::Signature, BarzahlenV2.configuration ] ]
           )
-      end
 
       if idempotency
         return @@grac_client.set( headers: { "Idempotency-Key" => SecureRandom.uuid} )
       else
         return @@grac_client
+      end
+    end
+
+    def self.execute_with_error_handling
+      begin
+        yield
+      rescue Grac::Exception::RequestFailed => e
+        raise BarzahlenV2::Error.generate_error_from_response("")
+      rescue  Grac::Exception::BadRequest,
+              Grac::Exception::Forbidden,
+              Grac::Exception::NotFound,
+              Grac::Exception::Conflict,
+              Grac::Exception::ServiceError => e
+        raise BarzahlenV2::Error.generate_error_from_response(e.body)
       end
     end
 end
