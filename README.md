@@ -11,7 +11,7 @@
 [api_v2_documentation_update]: https://integration.barzahlen.de/en/api#update-slip
 [api_v2_documentation_resend]: https://integration.barzahlen.de/en/api#resend-email-text-message
 [api_v2_documentation_invalidate]: https://integration.barzahlen.de/en/api#invalidate-slip
-[rails_request]: http://guides.rubyonrails.org/action_controller_overview.html#the-request-object
+[rack_request]: http://www.rubydoc.info/gems/rack/Rack/Request#content_type-instance_method
 
 # Barzahlen Ruby API Client
 
@@ -342,8 +342,53 @@ The webhook request is also signed as normal requests to the api with the aforem
 Be aware that the Barzahlen API is checking your **HTTPS server certificate** when issueing a webhook request, so make sure you have a server certificate which is accepted by common browsers.  
 For further documentation please refer to the [webhooks Barzahlen API documentation][api_v2_documentation_webhooks]
 
-The notification handling is expecting a standard [rails request][rails_request] object:
+The notification handling is expecting an Object in the following structure:
 
+```Ruby
+request = {
+  "Bz-Hook-Format" => "v2",
+  "Host" => "callback.example.com",
+  "Path" => "/barzahlen/callback",
+  "Port" => "443",
+  "Date" => "Fri, 01 Apr 2016 09:20:06 GMT",
+  "Method" => "POST",
+  "Bz-Signature" => "BZ1-HMAC-SHA256 eb22cda264a5cf5a138e8ac13f0aa8da2daf28c687d9db46872cf777f0decc04",
+  "Body" => '{
+    "event": "paid",
+    "event_occurred_at": "2016-01-06T12:34:56Z",
+    "affected_transaction_id": "4729294329",
+    "slip": {
+        "id": "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
+        "slip_type": "payment",
+        "division_id": "1234",
+        "reference_key": "O64737X",
+        "expires_at": "2016-01-10T12:34:56Z",
+        "customer": {
+            "key": "LDFKHSLFDHFL",
+            "cell_phone_last_4_digits": "6789",
+            "email": "john@example.com",
+            "language": "de-DE"
+        },
+        "metadata": {
+          "order_id": 1234,
+          "invoice_no": "A123"
+        },
+        "transactions": [
+          {
+            "id": "4729294329",
+            "currency": "EUR",
+            "amount": "123.34",
+            "state": "paid"
+          }
+        ]
+    }
+}'
+}
+```
+
+Method (default "POST") and port (default "443") are optional. (If you want to try out this request, the payment key is "6b3fb3abef828c7d10b5a905a49c988105621395")
+
+A request of this type can then be passed to the webhook request method:  
 ```Ruby
 request_hash = BarzahlenV2.webhook_request(request)
 ```
