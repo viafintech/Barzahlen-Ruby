@@ -1,19 +1,19 @@
 [control_center_app]: control-center.barzahlen.de
-[api_v2_documentation_base]: https://integration.barzahlen.de/en/api
-[api_v2_documentation_idempotency]: https://integration.barzahlen.de/en/api#idempotency
-[api_v2_documentation_signature]: https://integration.barzahlen.de/en/api#
-[api_v2_documentation_slip]: https://integration.barzahlen.de/en/api#calculating-the-signature
-[api_v2_documentation_webhooks]: https://integration.barzahlen.de/en/api#webhooks
-[api_v2_documentation_rate_limit]: https://integration.barzahlen.de/en/api#rate-limiting
-[api_v2_documentation_sandbox]: https://integration.barzahlen.de/en/api#sandbox
-[api_v2_documentation_slip]: https://integration.barzahlen.de/en/api#create-slip
-[api_v2_documentation_retrieve]: https://integration.barzahlen.de/en/api#retrieve-slip
-[api_v2_documentation_update]: https://integration.barzahlen.de/en/api#update-slip
-[api_v2_documentation_resend]: https://integration.barzahlen.de/en/api#resend-email-text-message
-[api_v2_documentation_invalidate]: https://integration.barzahlen.de/en/api#invalidate-slip
+[api_documentation_base]: https://integration.barzahlen.de/en/api
+[api_documentation_idempotency]: https://integration.barzahlen.de/en/api#idempotency
+[api_documentation_signature]: https://integration.barzahlen.de/en/api#
+[api_documentation_slip]: https://integration.barzahlen.de/en/api#calculating-the-signature
+[api_documentation_webhooks]: https://integration.barzahlen.de/en/api#webhooks
+[api_documentation_rate_limit]: https://integration.barzahlen.de/en/api#rate-limiting
+[api_documentation_sandbox]: https://integration.barzahlen.de/en/api#sandbox
+[api_documentation_slip]: https://integration.barzahlen.de/en/api#create-slip
+[api_documentation_retrieve]: https://integration.barzahlen.de/en/api#retrieve-slip
+[api_documentation_update]: https://integration.barzahlen.de/en/api#update-slip
+[api_documentation_resend]: https://integration.barzahlen.de/en/api#resend-email-text-message
+[api_documentation_invalidate]: https://integration.barzahlen.de/en/api#invalidate-slip
 [rack_request]: http://www.rubydoc.info/gems/rack/Rack/Request#content_type-instance_method
 
-# Barzahlen Ruby API Client
+# Barzahlen ruby API Client
 
 The official ruby gem for accessing the new Barzahlen (CPS) API V2.
 
@@ -21,8 +21,8 @@ The official ruby gem for accessing the new Barzahlen (CPS) API V2.
 
 Add this line to your application's gemfile
 
-```Ruby
-gem 'barzahlen_v2', '~> 0.0.1'
+```ruby
+gem 'barzahlen', '~> 0.0.1'
 ```
 
 Then execute:
@@ -34,52 +34,55 @@ bundle install
 Or install it yourself by typing
 
 ```shell
-gem install barzahlen_v2
+gem install barzahlen
 ```
 
 Finally:
 
-```Ruby
-require 'barzahlen_v2'
+```ruby
+require 'barzahlen'
 ```
 
 ## Configuration Values
 
-The gems configuration values are as following:  
+The gems configuration values are as following:
 * Sandbox: Default = false
 * Division ID: Default = "not_valid_division_id"
 * Payment key: Default = "not_valid_payment_key"
 
 Example configuration:
 
-```Ruby
-BarzahlenV2.configure do |config|
+```ruby
+Barzahlen.configure do |config|
   config.sandbox = false
   config.division_id = "12345"
   config.payment_key = "123456789abcdef123456789abcdef123456789a"
 end
 ```
 
-The calls from this gem go to the api endpoints of barzahlen which are stored in constant variables in the configuration.  
+The calls from this gem go to the api endpoints of barzahlen which are stored in constant variables in the configuration.
+
 The _Division ID_ and the _Payment Key_ can be found in the [Barzahlen Control Center App][control_center_app] and **must** be set in the configuration if you want to use the gem.
 
 ## Enforce https
 
-Per default the ssl connection-endpoints of the Barzahlen Barzahlen API V2 are used.
+Per default the ssl connection-endpoints of the Barzahlen Barzahlen API are used.
 
 ## Idempotency support build in
 
-Per default this client lib is also supporting idempotency. An idempotent request is simply sending the same request again. This is very very useful if a network failure happens, our system fails to process your request or you exceed your [rate limit][api_v2_documentation_rate_limit] and you can simply resend the request.  
-For further documentation please refer to the [Barzahlen API V2 Documentation][api_v2_documentation_idempotency].  
+Per default this client lib is also supporting idempotency. An idempotent request is simply sending the same request again. This is very very useful if a network failure happens, our system fails to process your request or you exceed your [rate limit][api_documentation_rate_limit] and you can simply resend the request.
+For further documentation please refer to the [Barzahlen API V2 Documentation][api_documentation_idempotency].
 A slip object has idempotency built in and can be retried (**create**d) as often as it is needed as long as the same object is taken.
 
 ## Functionality (production and sandbox)
 
-For development purposes the client lib can be set to sandbox mode by setting the sandbox-variable in the configuration to true.  
-In sandbox mode every request and also webhooks, which you can issue with the [Control Center App][control_center_app], are simulated. Everything which is produced in this mode obviously cannot be used in production.  
-For further information please refer to the [Barzahlen API Sandbox Documentation][api_v2_documentation_sandbox]
+For development purposes the client lib can be set to sandbox mode by setting the sandbox-variable in the configuration to true.
 
-```Ruby
+In sandbox mode every request and also webhooks, which you can issue with the [Control Center App][control_center_app], are simulated. Everything which is produced in this mode obviously cannot be used in production.
+
+For further information please refer to the [Barzahlen API Sandbox Documentation][api_documentation_sandbox]
+
+```ruby
 BarzahlenV2.configure do |config|
   config.sandbox = true
 end
@@ -87,14 +90,15 @@ end
 
 ### Basic Functionality
 
-The following is happening during a request:  
-1. The signature, based on the _division id_ and _payment key_ provided, will get created (for the signature creation please refer to [Barzahlen API V2 Signature Documentation][api_v2_documentation_signature])  
-2. A https-request is send to the barzahlen api endpoint  
-3. The response is evaluated  
-3.1 If an error occured, it will try to parse the error, create a client lib exception and throw it.  
-3.2 If everything works fine, the response will be returned as a ruby hash object with the following structure:  
+The following is happening during a request:
 
-```Ruby
+1. The signature, based on the _division id_ and _payment key_ provided, will get created (for the signature creation please refer to [Barzahlen API V2 Signature Documentation][api_documentation_signature])
+2. A https-request is send to the barzahlen api endpoint
+3. The response is evaluated
+3.1 If an error occured, it will try to parse the error, create a client lib exception and throw it.
+3.2 If everything works fine, the response will be returned as a ruby hash object with the following structure:
+
+```ruby
 {
   "id" => "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
   "slip_type" => "payment",
@@ -127,9 +131,9 @@ The following is happening during a request:
 
 ### Slip creation
 
-For creating a refund or payment you first need to generate a slip hash which then can be used to create the actual slip.  
+For creating a refund or payment you first need to generate a slip hash which then can be used to create the actual slip.
 
-```Ruby
+```ruby
 new_payment_slip =  {
                       slip_type: "payment",
                       customer: {
@@ -142,23 +146,23 @@ new_payment_slip =  {
                         }
                       ]
                     }
-bz_new_payment_slip = BarzahlenV2::Slip.new(new_payment_slip)
+bz_new_payment_slip = Barzahlen::Slip.new(new_payment_slip)
 ```
 
-A full list of all required and additional variables is available at [Barzahlen Api V2 slip creation Documentation][api_v2_documentation_slip].
+A full list of all required and additional variables is available at [Barzahlen Api V2 slip creation Documentation][api_documentation_slip].
 
 Afterwards this object can be used to create the slip and also use it for idempotency.
 
-```Ruby
+```ruby
 bz_new_payment_slip.create
 ```
 
 #### Refund or Payment
 
-The only difference for creating a refund or payment is by supplying either "payment" or "refund" as slip_type.  
-All required and applicable variables for a refund or payment slip is well documented in the [Barzahlen API V2 slip creation Documentation][api_v2_documentation_slip].
+The only difference for creating a refund or payment is by supplying either "payment" or "refund" as slip_type.
+All required and applicable variables for a refund or payment slip is well documented in the [Barzahlen API V2 slip creation Documentation][api_documentation_slip].
 
-Requests are made by the client lib as the [documentation][api_v2_documentation_slip] is suggesting.
+Requests are made by the client lib as the [documentation][api_documentation_slip] is suggesting.
 
 For all slip types the following variables are required:
 - slip_type
@@ -173,19 +177,19 @@ Additionally for **Refund** the following variables are required:
 - transactions/amount needs to be negative
 - show_stores_near can be provided
 
-A full list of all response variables is available in the [documentation][api_v2_documentation_slip]
+A full list of all response variables is available in the [documentation][api_documentation_slip]
 
 ### Retrieve Slip
 
 Retrieving a slip is simply done by:
 
-```Ruby
-BarzahlenV2.retrieve_slip(slip_id)
+```ruby
+Barzahlen.retrieve_slip(slip_id)
 ```
 
 This will return an object which looks the following:
 
-```Ruby
+```ruby
 {
   "id": "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
   "slip_type": "payment",
@@ -214,14 +218,14 @@ This will return an object which looks the following:
 }
 ```
 
-For a complete list of all response variables please refer to the [Barzahlen API V2 retrieve documentation][api_v2_documentation_retrieve]
+For a complete list of all response variables please refer to the [Barzahlen API V2 retrieve documentation][api_documentation_retrieve]
 
 ### Update Slip
 
-For updating a slip a hash has to be supplied as mentioned prior in the slip section. It is important to only supply the mandatory values and the values which need to change. Supplying "nil" or "null" will set the variable to null on our systems. Also keep in mind that if you change e-mail or the telephone number an e-mail is send out or it could be possible that it triggers a resend of a text message.  
-For a full list of all variables and their constraints please read the [Barzahlen Api V2 update slip documentation][api_v2_documentation_update]
+For updating a slip a hash has to be supplied as mentioned prior in the slip section. It is important to only supply the mandatory values and the values which need to change. Supplying "nil" or "null" will set the variable to null on our systems. Also keep in mind that if you change e-mail or the telephone number an e-mail is send out or it could be possible that it triggers a resend of a text message.
+For a full list of all variables and their constraints please read the [Barzahlen Api V2 update slip documentation][api_documentation_update]
 
-```Ruby
+```ruby
 updateable_slip= {
   "customer": {
     "email": "john@example.com",
@@ -236,12 +240,12 @@ updateable_slip= {
   ],
   "reference_key": "NEWKEY"
 }
-BarzahlenV2.update_slip(slip_id, updateable_slip)
+Barzahlen.update_slip(slip_id, updateable_slip)
 ```
 
 As a result you will get back a the whole slip as hash:
 
-```Ruby
+```ruby
 {
   "id" => "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
   "slip_type" => "payment",
@@ -270,41 +274,41 @@ As a result you will get back a the whole slip as hash:
 }
 ```
 
-Content can be looked up [here][api_v2_documentation_update]
+Content can be looked up [here][api_documentation_update]
 
 ### Resend email
 
 Resending an e-mail is done as following:
 
-```Ruby
-BarzahlenV2.resend_email(slip_id)
+```ruby
+Barzahlen.resend_email(slip_id)
 ```
 
-For further information please refer to the [Barzahlen API V2 resend documentation][api_v2_documentation_resend].
+For further information please refer to the [Barzahlen API V2 resend documentation][api_documentation_resend].
 
 ### Resend text_message
 
 Resending a text message is done as following:
 
-```Ruby
-BarzahlenV2.resend_text_message(slip_id)
+```ruby
+Barzahlen.resend_text_message(slip_id)
 ```
 
 Keep in mind that resending a text message can be not possible because of an exceeded text message sending count or if you are using the sandbox mode.
 
-For further information please refer to the [Barzahlen API V2 resend documentation][api_v2_documentation_resend]
+For further information please refer to the [Barzahlen API V2 resend documentation][api_documentation_resend]
 
 ### Invalidate Slip
 
 Invalidating a slip is done as following:
 
-```Ruby
-BarzahlenV2.invalidate_slip(slip_id)
+```ruby
+Barzahlen.invalidate_slip(slip_id)
 ```
 
 As a response you get for example:
 
-```Ruby
+```ruby
 {
   "id" => "slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd",
   "slip_type" => "payment",
@@ -333,18 +337,18 @@ As a response you get for example:
 }
 ```
 
-For a full list of all response variables please refer to the [Barzahlen API V2 invalidate slip documentation][api_v2_documentation_invalidate]
+For a full list of all response variables please refer to the [Barzahlen API V2 invalidate slip documentation][api_documentation_invalidate]
 
 ### Webhook Handling
 
-When a slip is paid or expires a webhook request is issued to the url you provided individually in the slip or in the [Barzahlen Control Center App][control_center_app]. In sandbox mode you can manually trigger a paid or expired webhook request in the [Barzahlen Control Center App][control_center_app].  
-The webhook request is also signed as normal requests to the api with the aforementioned _Payment Key_. But don't worry about the signature check because this library will take care of it. If the signature check is not failing a **BarzahlenV2::Error::SignatureError** is raised.  
-Be aware that the Barzahlen API is checking your **HTTPS server certificate** when issueing a webhook request, so make sure you have a server certificate which is accepted by common browsers.  
-For further documentation please refer to the [webhooks Barzahlen API documentation][api_v2_documentation_webhooks]
+When a slip is paid or expires a webhook request is issued to the url you provided individually in the slip or in the [Barzahlen Control Center App][control_center_app]. In sandbox mode you can manually trigger a paid or expired webhook request in the [Barzahlen Control Center App][control_center_app].
+The webhook request is also signed as normal requests to the api with the aforementioned _Payment Key_. But don't worry about the signature check because this library will take care of it. If the signature check is not failing a **Barzahlen::Error::SignatureError** is raised.
+Be aware that the Barzahlen API is checking your **HTTPS server certificate** when issueing a webhook request, so make sure you have a server certificate which is accepted by common browsers.
+For further documentation please refer to the [webhooks Barzahlen API documentation][api_documentation_webhooks]
 
 The notification handling is expecting an Object in the following structure:
 
-```Ruby
+```ruby
 request = {
   "Bz-Hook-Format" => "v2",
   "Host" => "callback.example.com",
@@ -388,9 +392,9 @@ request = {
 
 Method (default "POST") and port (default "443") are optional. (If you want to try out this request, the payment key is "6b3fb3abef828c7d10b5a905a49c988105621395")
 
-A request of this type can then be passed to the webhook request method:  
-```Ruby
-request_hash = BarzahlenV2.webhook_request(request)
+A request of this type can then be passed to the webhook request method:
+```ruby
+request_hash = Barzahlen.webhook_request(request)
 ```
 
 Following can happen:
@@ -401,7 +405,7 @@ Following can happen:
 
 Example hash return:
 
-```Ruby
+```ruby
 {
   "event" => "paid",
   "event_occurred_at" => "2016-01-06T12:34:56Z",
@@ -434,30 +438,30 @@ Example hash return:
 }
 ```
 
-Please **don't forget** to respond at least with a http status out of the 200 range so that we are sure you processed the request successfully. (See in [documentation][api_v2_documentation_webhooks])
+Please **don't forget** to respond at least with a http status out of the 200 range so that we are sure you processed the request successfully. (See in [documentation][api_documentation_webhooks])
 
 ## Interprete Api Error and return
 
-Errors will be generated and raised based on the [Barzahlen API V2 error response][api_v2_documentation_error] information.
+Errors will be generated and raised based on the [Barzahlen API V2 error response][api_documentation_error] information.
 
-The error_class, which is explained on [Barzahlen API V2 Documentation][api_v2_documentation_error], will be used as the class name of the error as following:
+The error_class, which is explained on [Barzahlen API V2 Documentation][api_documentation_error], will be used as the class name of the error as following:
 
-* BarzahlenV2::Error::AuthError
-* BarzahlenV2::Error::TransportError
-* BarzahlenV2::Error::IdempotencyError
-* BarzahlenV2::Error::RateLimitError
-* BarzahlenV2::Error::InvalidFormatError
-* BarzahlenV2::Error::InvalidStateError
-* BarzahlenV2::Error::InvalidParameterError
-* BarzahlenV2::Error::NotAllowedError
-* BarzahlenV2::Error::ServerError
-* BarzahlenV2::Error::UnexpectedError -> Is raised when no interpretation of the error response was impossible
+* Barzahlen::Error::AuthError
+* Barzahlen::Error::TransportError
+* Barzahlen::Error::IdempotencyError
+* Barzahlen::Error::RateLimitError
+* Barzahlen::Error::InvalidFormatError
+* Barzahlen::Error::InvalidStateError
+* Barzahlen::Error::InvalidParameterError
+* Barzahlen::Error::NotAllowedError
+* Barzahlen::Error::ServerError
+* Barzahlen::Error::UnexpectedError -> Is raised when no interpretation of the error response was impossible
 
-All these Errors are of type BarzahlenV2::Error::ApiError.
+All these Errors are of type Barzahlen::Error::ApiError.
 
 If the interpretation was successful you will get an error where you can access the information following
 
-```Ruby
+```ruby
 error.error_class # The error_class from the response which is used as error class name
 error.error_code # The error_code from the response
 error.message # The message which describes the specific error
