@@ -434,6 +434,8 @@ Example hash return:
 }
 ```
 
+Please **don't forget** to respond at least with a http status out of the 200 range so that we are sure you processed the request successfully. (See in [documentation][api_v2_documentation_webhooks])
+
 ## Interprete Api Error and return
 
 Errors will be generated and raised based on the [Barzahlen API V2 error response][api_v2_documentation_error] information.
