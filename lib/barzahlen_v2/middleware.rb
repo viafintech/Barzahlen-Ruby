@@ -5,10 +5,9 @@ require "time"
 module BarzahlenV2
   module Middleware
     class Signature
-      def initialize(request, *settings)
+      def initialize(request, config)
         @request  = request
-        @config   = settings[0]
-        @settings = settings[1..-1]
+        @config   = config
       end
 
       def call (opts, request_uri, method, params, body)
