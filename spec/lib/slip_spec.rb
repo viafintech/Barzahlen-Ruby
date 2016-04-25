@@ -163,21 +163,15 @@ module BarzahlenV2
 
   describe "Webhook request" do
     let(:request) {
-      return Class.new {
-        attr_accessor :headers, :fullpath, :body, :port, :method
-
-        def initialize
-          @headers = {
+      return {
+            "Bz-Hook-Format" => "v2",
             "Host" => "callback.example.com",
+            "Path" => "/barzahlen/callback",
+            "Port" => "443",
             "Date" => "Fri, 01 Apr 2016 09:20:06 GMT",
+            "Method" => "POST",
             "Bz-Signature" => "BZ1-HMAC-SHA256 eb22cda264a5cf5a138e8ac13f0aa8da2daf28c687d9db46872cf777f0decc04",
-            "Content-Type" => "application/json;charset=utf-8",
-            "Bz-Hook-Format" => "v2"
-          }
-          @fullpath = "/barzahlen/callback"
-          @port = "443"
-          @method = "POST"
-          @body = '{
+            "Body" => '{
     "event": "paid",
     "event_occurred_at": "2016-01-06T12:34:56Z",
     "affected_transaction_id": "4729294329",
@@ -207,8 +201,7 @@ module BarzahlenV2
         ]
     }
 }'
-        end
-      }.new
+      }
     }
 
     before do
@@ -217,27 +210,37 @@ module BarzahlenV2
       end
     end
 
-    it "takes request and returns a hash to work with" do
-      expect {
-        BarzahlenV2.webhook_request(request)
-      }.to_not raise_error
-    end
-
     it "refuses if the api version is v1 and returns nil" do
-      request.headers["Bz-Hook-Format"] = "v1"
-      expect(BarzahlenV2.webhook_request(request)).to eq(nil)
-    end
-
-    it "refuses if the content type is not application/json and returns nil" do
-      request.headers["Content-Type"] = "Chewbacca"
+      request["Bz-Hook-Format"] = "v1"
       expect(BarzahlenV2.webhook_request(request)).to eq(nil)
     end
 
     it "refuses if the signature is invalid and raises exception" do
-      request.headers["Host"] = "Unknown"
+      request["Host"] = "Unknown"
       expect{
         BarzahlenV2.webhook_request(request)
         }.to raise_error(BarzahlenV2::Error::SignatureError)
+    end
+
+    it "refuses if the path is invalid and raises exception" do
+      request["Path"] = "Unknown"
+      expect{
+        BarzahlenV2.webhook_request(request)
+        }.to raise_error(BarzahlenV2::Error::SignatureError)
+    end
+
+    it "works without method" do
+      request.delete("Method")
+      expect{
+        BarzahlenV2.webhook_request(request)
+        }.to_not raise_error
+    end
+
+    it "works without port" do
+      request.delete("Port")
+      expect{
+        BarzahlenV2.webhook_request(request)
+        }.to_not raise_error
     end
 
     it "succeeds and returns valid Hash" do

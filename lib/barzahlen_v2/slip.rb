@@ -59,31 +59,25 @@ module BarzahlenV2
   # Handle a webhook request
 
   def self.webhook_request(request)
-    bz_hook_format = request.headers["Bz-Hook-Format"]
+    bz_hook_format = request["Bz-Hook-Format"]
 
     #stop processing when bz-hook-format = v1 because it will be send as v2 again
     if bz_hook_format.include? "v1"
       return nil
     end
 
-    content_type = request.headers["Content-Type"]
-
-    if ! content_type.include? "application/json"
-      return nil
-    end
-
     signature = BarzahlenV2::Middleware.generate_bz_signature(
       BarzahlenV2.configuration.payment_key,
-      request.headers["Host"] + ":" + request.port,
-      request.method.upcase,
-      request.headers["Date"],
-      request.fullpath.split("?")[0] || request.fullpath,
-      "",
-      request.body
-      )
+      request["Host"] + ":" + (request["Port"] || "443"),
+      request["Method"] ? request["Method"].upcase : "POST",
+      request["Date"],
+      request["Path"].split("?")[0] || request["Path"],
+      request["Path"].split("?")[1] || "",
+      request["Body"]
+    )
 
-    if request.headers["Bz-Signature"].include? signature
-      return JSON.parse(request.body)
+    if request["Bz-Signature"].include? signature
+      return JSON.parse(request["Body"])
     else
       raise BarzahlenV2::Error::SignatureError.new("Signature not valid")
     end
@@ -95,8 +89,7 @@ module BarzahlenV2
     def self.get_grac_client(idempotency = false)
       @@grac_client ||= Grac::Client.new(
           BarzahlenV2.configuration.sandbox ?
-            BarzahlenV2::Configuration::API_HOST_SANDBOX :
-            BarzahlenV2::Configuration::API_HOST,
+            BarzahlenV2::Configuration::API_HOST_SANDBOX : BarzahlenV2::Configuration::API_HOST,
           middleware: [ [ BarzahlenV2::Middleware::Signature, BarzahlenV2.configuration ] ]
           )
 
@@ -112,11 +105,7 @@ module BarzahlenV2
         yield
       rescue Grac::Exception::RequestFailed => e
         raise BarzahlenV2::Error.generate_error_from_response("")
-      rescue  Grac::Exception::BadRequest,
-              Grac::Exception::Forbidden,
-              Grac::Exception::NotFound,
-              Grac::Exception::Conflict,
-              Grac::Exception::ServiceError => e
+      rescue  Grac::Exception::ClientException => e
         raise BarzahlenV2::Error.generate_error_from_response(e.body)
       end
     end
