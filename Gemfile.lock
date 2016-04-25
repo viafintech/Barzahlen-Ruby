@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    barzahlen_v2 (0.0.1)
+    barzahlen (0.0.1)
       grac (~> 2.2.1)
 
 GEM
@@ -41,7 +41,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  barzahlen_v2!
+  barzahlen!
   builder (~> 3.2.2)
   rack-test (~> 0.6.3)
   rake (~> 10.4.1)

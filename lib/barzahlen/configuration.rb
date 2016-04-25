@@ -1,4 +1,4 @@
-module BarzahlenV2
+module Barzahlen
   class Configuration
     API_HOST = "https://api.barzahlen.de/v2"
     API_HOST_SANDBOX = "https://api-sandbox.barzahlen.de/v2"

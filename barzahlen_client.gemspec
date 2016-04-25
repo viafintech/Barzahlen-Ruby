@@ -1,12 +1,12 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'barzahlen_v2/version'
+require 'barzahlen/version'
 
 Gem::Specification.new do |spec|
   # For explanations see http://docs.rubygems.org/read/chapter/20
-  spec.name          = "barzahlen_v2"
-  spec.version       = BarzahlenV2::VERSION
+  spec.name          = "barzahlen"
+  spec.version       = Barzahlen::VERSION
   spec.authors       = ["David Leib"]
   spec.email         = ["david.leib@barzahlen.de"]
   spec.description   = %q{This is a ruby gem to access the barzahlen api online v2 for online shops.}

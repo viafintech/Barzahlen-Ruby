@@ -1,7 +1,7 @@
 require "spec_helper"
 require "json"
 
-module BarzahlenV2
+module Barzahlen
   describe Slip do
     let(:refund_slip) {
       return {
@@ -42,7 +42,7 @@ module BarzahlenV2
       expect(request_client).to receive(:set).with(hash_including(headers: { "Idempotency-Key" => //}))
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect {
-        BarzahlenV2::Slip.new(refund_slip)
+        Barzahlen::Slip.new(refund_slip)
         }.to_not raise_error
     end
 
@@ -51,22 +51,22 @@ module BarzahlenV2
       expect(request_client).to receive(:set).with(hash_including(headers: { "Idempotency-Key" => //}))
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect {
-        BarzahlenV2::Slip.new(payment_slip)
+        Barzahlen::Slip.new(payment_slip)
         }.to_not raise_error
     end
 
     it "is setting correct uri" do
-      BarzahlenV2::Slip.new(refund_slip)
+      Barzahlen::Slip.new(refund_slip)
 
       expect(@@grac_client.uri).to eq("https://api.barzahlen.de/v2")
     end
 
     it "is setting correct sandbox uri" do
-      BarzahlenV2.configure { |config|
+      Barzahlen.configure { |config|
         config.sandbox = true
       }
 
-      BarzahlenV2::Slip.new(refund_slip)
+      Barzahlen::Slip.new(refund_slip)
 
       expect(@@grac_client.uri).to eq("https://api-sandbox.barzahlen.de/v2")
     end
@@ -83,7 +83,7 @@ module BarzahlenV2
 
       new_payment_slip = nil
       expect {
-        new_payment_slip = BarzahlenV2::Slip.new(payment_slip)
+        new_payment_slip = Barzahlen::Slip.new(payment_slip)
         }.to_not raise_error
       expect {
         new_payment_slip.create
@@ -101,7 +101,7 @@ module BarzahlenV2
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect(request_client).to receive(:path).with("/slips/{id}", {:id=>"1"}).and_return(request_client)
       expect(request_client).to receive(:get).and_return({})
-      BarzahlenV2.retrieve_slip("1")
+      Barzahlen.retrieve_slip("1")
     end
   end
 
@@ -115,7 +115,7 @@ module BarzahlenV2
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect(request_client).to receive(:path).with("/slips/{id}", {:id=>"1"}).and_return(request_client)
       expect(request_client).to receive(:patch).with({}).and_return({})
-      BarzahlenV2.update_slip(1,{})
+      Barzahlen.update_slip(1,{})
     end
   end
 
@@ -129,7 +129,7 @@ module BarzahlenV2
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect(request_client).to receive(:path).with("/slips/{id}/resend/email", {:id=>"1"}).and_return(request_client)
       expect(request_client).to receive(:post).and_return({})
-      BarzahlenV2.resend_email(1)
+      Barzahlen.resend_email(1)
     end
   end
 
@@ -143,7 +143,7 @@ module BarzahlenV2
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect(request_client).to receive(:path).with("/slips/{id}/resend/text_message", {:id=>"1"}).and_return(request_client)
       expect(request_client).to receive(:post).and_return({})
-      BarzahlenV2.resend_text_message(1)
+      Barzahlen.resend_text_message(1)
     end
   end
 
@@ -157,7 +157,7 @@ module BarzahlenV2
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect(request_client).to receive(:path).with("/slips/{id}/invalidate", {:id=>"1"}).and_return(request_client)
       expect(request_client).to receive(:post).and_return({})
-      BarzahlenV2.invalidate_slip(1)
+      Barzahlen.invalidate_slip(1)
     end
   end
 
@@ -205,46 +205,46 @@ module BarzahlenV2
     }
 
     before do
-      BarzahlenV2.configure do |config|
+      Barzahlen.configure do |config|
         config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
       end
     end
 
     it "refuses if the api version is v1 and returns nil" do
       request["Bz-Hook-Format"] = "v1"
-      expect(BarzahlenV2.webhook_request(request)).to eq(nil)
+      expect(Barzahlen.webhook_request(request)).to eq(nil)
     end
 
     it "refuses if the signature is invalid and raises exception" do
       request["Host"] = "Unknown"
       expect{
-        BarzahlenV2.webhook_request(request)
-        }.to raise_error(BarzahlenV2::Error::SignatureError)
+        Barzahlen.webhook_request(request)
+        }.to raise_error(Barzahlen::Error::SignatureError)
     end
 
     it "refuses if the path is invalid and raises exception" do
       request["Path"] = "Unknown"
       expect{
-        BarzahlenV2.webhook_request(request)
-        }.to raise_error(BarzahlenV2::Error::SignatureError)
+        Barzahlen.webhook_request(request)
+        }.to raise_error(Barzahlen::Error::SignatureError)
     end
 
     it "works without method" do
       request.delete("Method")
       expect{
-        BarzahlenV2.webhook_request(request)
+        Barzahlen.webhook_request(request)
         }.to_not raise_error
     end
 
     it "works without port" do
       request.delete("Port")
       expect{
-        BarzahlenV2.webhook_request(request)
+        Barzahlen.webhook_request(request)
         }.to_not raise_error
     end
 
     it "succeeds and returns valid Hash" do
-      valid_hash = BarzahlenV2.webhook_request(request)
+      valid_hash = Barzahlen.webhook_request(request)
       expect(valid_hash).to be_an(Hash)
     end
   end

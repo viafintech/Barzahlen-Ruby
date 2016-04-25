@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module BarzahlenV2
+module Barzahlen
   describe Configuration do
     it "has valid default values" do
       config = Configuration.new
@@ -10,8 +10,8 @@ module BarzahlenV2
     end
 
     it "has valid constant values" do
-      expect(BarzahlenV2::Configuration::API_HOST).to eq("https://api.barzahlen.de/v2")
-      expect(BarzahlenV2::Configuration::API_HOST_SANDBOX).to eq("https://api-sandbox.barzahlen.de/v2")
+      expect(Barzahlen::Configuration::API_HOST).to eq("https://api.barzahlen.de/v2")
+      expect(Barzahlen::Configuration::API_HOST_SANDBOX).to eq("https://api-sandbox.barzahlen.de/v2")
     end
 
     it "can set specific values" do

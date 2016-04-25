@@ -1,11 +1,11 @@
 require "spec_helper"
 require "time"
 
-module BarzahlenV2
+module Barzahlen
   module Middleware
     describe Signature do
       before :each do
-        BarzahlenV2.configure do |config|
+        Barzahlen.configure do |config|
           config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
           config.division_id = "12345"
         end
@@ -35,7 +35,7 @@ module BarzahlenV2
           ""
           )
 
-        signature = Signature.new(request,BarzahlenV2.configuration)
+        signature = Signature.new(request,Barzahlen.configuration)
         signature.call({ headers: {}},@request_uri,@request_method,{},"")
       end
 
@@ -62,7 +62,7 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request,BarzahlenV2.configuration)
+        signature = Signature.new(request,Barzahlen.configuration)
         signature.call({ headers: {}},@request_uri,@request_method,{},"")
       end
 
@@ -92,7 +92,7 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request,BarzahlenV2.configuration)
+        signature = Signature.new(request,Barzahlen.configuration)
         signature.call({
           headers: {
             "Idempotency-Key" => @idempotency_key
@@ -123,7 +123,7 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request,BarzahlenV2.configuration)
+        signature = Signature.new(request,Barzahlen.configuration)
         signature.call({ headers: {} },@request_uri,@request_method,{ count: "2" },"")
       end
 
@@ -150,7 +150,7 @@ module BarzahlenV2
           ""
           ).and_return(response)
 
-        signature = Signature.new(request,BarzahlenV2.configuration)
+        signature = Signature.new(request,Barzahlen.configuration)
         signature.call({ headers: {} },@request_uri,@request_method,{ count: "2", foo: "bar" },"")
       end
 
@@ -177,14 +177,14 @@ module BarzahlenV2
           '{ "foo" : "bar", "bla": 123 }'
           ).and_return(response)
 
-        signature = Signature.new(request,BarzahlenV2.configuration)
+        signature = Signature.new(request,Barzahlen.configuration)
         signature.call({ headers: {} },@request_uri,@request_method,{ },'{ "foo" : "bar", "bla": 123 }')
       end
     end
 
     describe "Signature generation" do
       before :each do
-        BarzahlenV2.configure do |config|
+        Barzahlen.configure do |config|
           config.division_id = "12345"
           config.payment_key = "123456"
         end
@@ -199,8 +199,8 @@ module BarzahlenV2
       end
 
       it "generates the signature correctly with minimal setup" do
-        signature = BarzahlenV2::Middleware.generate_bz_signature(
-          BarzahlenV2.configuration.payment_key,
+        signature = Barzahlen::Middleware.generate_bz_signature(
+          Barzahlen.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header
@@ -210,8 +210,8 @@ module BarzahlenV2
       end
 
       it "generates the signature correctly with idempotency key" do
-        signature = BarzahlenV2::Middleware.generate_bz_signature(
-          BarzahlenV2.configuration.payment_key,
+        signature = Barzahlen::Middleware.generate_bz_signature(
+          Barzahlen.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header,
@@ -229,8 +229,8 @@ module BarzahlenV2
         @request_query_string = "count=2"
         @request_body = "{\"foo\": \"bar\"}"
 
-        signature = BarzahlenV2::Middleware.generate_bz_signature(
-          BarzahlenV2.configuration.payment_key,
+        signature = Barzahlen::Middleware.generate_bz_signature(
+          Barzahlen.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header,
@@ -244,7 +244,7 @@ module BarzahlenV2
       end
 
       it "generates a correct webhook signature" do
-        BarzahlenV2.configure do |config|
+        Barzahlen.configure do |config|
           config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
         end
 
@@ -285,8 +285,8 @@ module BarzahlenV2
 }'
         @request_idempotency_key = ""
 
-        signature = BarzahlenV2::Middleware.generate_bz_signature(
-          BarzahlenV2.configuration.payment_key,
+        signature = Barzahlen::Middleware.generate_bz_signature(
+          Barzahlen.configuration.payment_key,
           @request_host_header_with_port,
           @request_method,
           @request_date_header,
@@ -300,7 +300,7 @@ module BarzahlenV2
       end
 
       it "generates the signature correctly everything set" do
-        BarzahlenV2.configure do |config|
+        Barzahlen.configure do |config|
           config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
         end
 
@@ -312,8 +312,8 @@ module BarzahlenV2
         @request_body = ""
         @request_idempotency_key = ""
 
-        signature = BarzahlenV2::Middleware.generate_bz_signature(
-          BarzahlenV2.configuration.payment_key,
+        signature = Barzahlen::Middleware.generate_bz_signature(
+          Barzahlen.configuration.payment_key,
           @request_host_header,
           @request_method,
           @request_date_header,

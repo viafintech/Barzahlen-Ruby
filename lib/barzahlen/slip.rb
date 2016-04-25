@@ -1,15 +1,14 @@
 require "securerandom"
-require "uri"
 require "json"
 
-module BarzahlenV2
+module Barzahlen
   IDEMPOTENCY_ENABLED = true
 
   #For idempotency purposes a class takes care of refund and payment
 
   class Slip
     def initialize(opts = {})
-      @request = BarzahlenV2.get_grac_client(BarzahlenV2::IDEMPOTENCY_ENABLED)
+      @request = Barzahlen.get_grac_client(Barzahlen::IDEMPOTENCY_ENABLED)
       @request_hash = opts
     end
 
@@ -18,7 +17,7 @@ module BarzahlenV2
       @request_hash.each do |key, value|
         @request_hash[key].freeze
       end
-      BarzahlenV2.execute_with_error_handling do
+      Barzahlen.execute_with_error_handling do
         @request.path("/slips").post(@request_hash)
       end
     end
@@ -66,8 +65,8 @@ module BarzahlenV2
       return nil
     end
 
-    signature = BarzahlenV2::Middleware.generate_bz_signature(
-      BarzahlenV2.configuration.payment_key,
+    signature = Barzahlen::Middleware.generate_bz_signature(
+      Barzahlen.configuration.payment_key,
       request["Host"] + ":" + (request["Port"] || "443"),
       request["Method"] ? request["Method"].upcase : "POST",
       request["Date"],
@@ -79,7 +78,7 @@ module BarzahlenV2
     if request["Bz-Signature"].include? signature
       return JSON.parse(request["Body"])
     else
-      raise BarzahlenV2::Error::SignatureError.new("Signature not valid")
+      raise Barzahlen::Error::SignatureError.new("Signature not valid")
     end
   end
 
@@ -88,9 +87,9 @@ module BarzahlenV2
 
     def self.get_grac_client(idempotency = false)
       @@grac_client ||= Grac::Client.new(
-          BarzahlenV2.configuration.sandbox ?
-            BarzahlenV2::Configuration::API_HOST_SANDBOX : BarzahlenV2::Configuration::API_HOST,
-          middleware: [ [ BarzahlenV2::Middleware::Signature, BarzahlenV2.configuration ] ]
+          Barzahlen.configuration.sandbox ?
+            Barzahlen::Configuration::API_HOST_SANDBOX : Barzahlen::Configuration::API_HOST,
+          middleware: [ [ Barzahlen::Middleware::Signature, Barzahlen.configuration ] ]
           )
 
       if idempotency
@@ -104,9 +103,9 @@ module BarzahlenV2
       begin
         yield
       rescue Grac::Exception::RequestFailed => e
-        raise BarzahlenV2::Error.generate_error_from_response("")
+        raise Barzahlen::Error.generate_error_from_response("")
       rescue  Grac::Exception::ClientException => e
-        raise BarzahlenV2::Error.generate_error_from_response(e.body)
+        raise Barzahlen::Error.generate_error_from_response(e.body)
       end
     end
 end

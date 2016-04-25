@@ -2,7 +2,7 @@ require "openssl"
 require "uri"
 require "time"
 
-module BarzahlenV2
+module Barzahlen
   module Middleware
     class Signature
       def initialize(request, config)
@@ -20,7 +20,7 @@ module BarzahlenV2
         # Prepare the Date header
         request_date_header     = Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-        signature               = BarzahlenV2::Middleware.generate_bz_signature(
+        signature               = Barzahlen::Middleware.generate_bz_signature(
                                     @config.payment_key,
                                     request_host_header,
                                     request_method,

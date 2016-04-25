@@ -1,6 +1,6 @@
 require "json"
 
-module BarzahlenV2
+module Barzahlen
   module Error
     class ClientError < StandardError
       attr_reader :error_message
