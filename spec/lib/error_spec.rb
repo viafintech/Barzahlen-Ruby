@@ -111,10 +111,7 @@ module BarzahlenV2
       it "generates valid error messages" do
         error_class = BarzahlenV2::Error.generate_error_from_response(response)
 
-        expect(error_class.message).to eq("Error occured with: The given reference key already exists - use another one.\n"\
-               "Barzahlen Error Code: reference_key_already_exists\n"\
-               "Please look for help on: https://www.barzahlen.de/\n"\
-               "Your request_id is: 64ec26b27d414a66b87f2ec7cad7e92c")
+        expect(error_class.message).to eq("Error occurred with: The given reference key already exists - use another one.")
       end
 
       it "set error values" do
@@ -142,10 +139,7 @@ module BarzahlenV2
         error_body = "502 Bad Gateway"
         error_class = BarzahlenV2::Error.generate_error_from_response(error_body)
 
-        expect(error_class.message).to eq("Error occured with: Please contact CPS to help us fix that as soon as possible.\n"\
-               "Barzahlen Error Code: Unknown error code (body): \"502 Bad Gateway\"\n"\
-               "Please look for help on: https://www.cashpaymentsolutions.com/de/geschaeftskunden/kontakt\n"\
-               "Your request_id is: not_available")
+        expect(error_class.message).to eq("Error occurred with: Please contact CPS to help us fix that as soon as possible.")
       end
     end
   end

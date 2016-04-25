@@ -34,16 +34,13 @@ module BarzahlenV2
       end
 
       def message
-        return "Error occured with: #{@error_message}\n"\
-               "Barzahlen Error Code: #{@error_code}\n"\
-               "Please look for help on: #{@documentation_url}\n"\
-               "Your request_id is: #{@request_id}"
+        return "Error occurred with: #{@error_message}"
       end
 
       alias_method :to_s, :message
     end
 
-    class AuthError             < ApiError ; end
+    class AuthError             < ApiError; end
     class TransportError        < ApiError; end
     class IdempotencyError      < ApiError; end
     class RateLimitError        < ApiError; end
@@ -60,25 +57,25 @@ module BarzahlenV2
 
       case error_hash[:error_class]
       when "auth"
-        return  AuthError.new( error_hash )
+        return AuthError.new( error_hash )
       when "transport"
-        return  TransportError.new( error_hash )
+        return TransportError.new( error_hash )
       when "idempotency"
-        return  IdempotencyError.new( error_hash )
+        return IdempotencyError.new( error_hash )
       when "rate_limit"
-        return  RateLimitError.new( error_hash )
+        return RateLimitError.new( error_hash )
       when "invalid_format"
-        return  InvalidFormatError.new( error_hash )
+        return InvalidFormatError.new( error_hash )
       when "invalid_state"
-        return  InvalidStateError.new( error_hash )
+        return InvalidStateError.new( error_hash )
       when "invalid_parameter"
-        return  InvalidParameterError.new( error_hash )
+        return InvalidParameterError.new( error_hash )
       when "not_allowed"
-        return  NotAllowedError.new( error_hash )
+        return NotAllowedError.new( error_hash )
       when "server_error"
-        return  ServerError.new( error_hash )
+        return ServerError.new( error_hash )
       else
-        return  UnexpectedError.new( error_hash )
+        return UnexpectedError.new( error_hash )
       end
     end
 
