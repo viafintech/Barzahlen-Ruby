@@ -154,9 +154,7 @@ For a complete list of all response variables please refer to the [Barzahlen API
 
 ### Update Slip
 
-For updating a slip, a hash has to be supplied as mentioned prior in the slip section. It is important to only supply the mandatory values and the values which need to change. Supplying `nil` or `null` will set the variable to `null` on our systems.
-
-Also keep in mind that if you change e-mail or the telephone number, an e-mail is send out or it could be possible that it triggers a resend of a text message.
+For updating a slip, a hash has to be supplied as mentioned prior in the slip section.
 
 For a full list of all variables and their constraints please read the [Barzahlen Api v2 update slip documentation][api_documentation_update].
 
@@ -229,8 +227,6 @@ Resending a slip text message is done as following:
 Barzahlen.resend_text_message(slip_id)
 ```
 
-Keep in mind that resending a text message can be unsuccessful because of an exceeded text message sending count or if you are using the `sandbox` mode.
-
 For further information please refer to the [Barzahlen API v2 resend documentation][api_documentation_resend].
 
 ### Invalidate Slip
@@ -282,9 +278,7 @@ In sandbox mode you can manually trigger a `paid` or `expired` webhook request i
 
 The webhook request is also signed as normal requests to the api with the aforementioned `payment_key`. But don't worry about the signature check because this library will take care of it.
 
-If the signature check is not failing a **Barzahlen::Error::SignatureError** is raised.
-
-Be aware that the Barzahlen API v2 is checking your **HTTPS server certificate** when issueing a webhook request, so make sure you have a server certificate which is accepted by common browsers.
+If the signature check is failing a **Barzahlen::Error::SignatureError** is raised.
 
 For further documentation please refer to the [webhooks Barzahlen API v2 documentation][api_documentation_webhooks].
 
@@ -380,7 +374,7 @@ Example hash response:
 }
 ```
 
-Please **don't forget** to respond at least with a http status out of the 200 range, so that the Barzahlen systems can be certain that you processed the request successfully. (See in [webhook documentation][api_documentation_webhooks])
+For further documentation about webhooks please refer to [webhook documentation][api_documentation_webhooks]
 
 ## Interprete Api Error and Return
 
