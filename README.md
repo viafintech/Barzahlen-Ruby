@@ -70,7 +70,7 @@ end
 
 The following is happening during a request:
 
-1. The signature, based on the provided `division_id` and `payment_key`, will get created.
+1. The [signature][api_documentation_signature], based on the provided `division_id` and `payment_key`, will get created.
 2. A https-request is send to the Barzahlen API endpoint.
 3. The response is evaluated.
   1. If an error occured, it will try to parse the error, create a client lib exception and throw it.
@@ -417,10 +417,10 @@ For bugs and feature requests open an issue on Github. For code contributions fo
 
 [LICENSE](LICENSE) (MIT)
 
-[control_center_app]: https://control-center.barzahlen.de
+[control_center_app]: https://controlcenter.barzahlen.de
 [api_documentation_base]: http://docs.barzahlen.de/api/v2
 [api_documentation_idempotency]: http://docs.barzahlen.de/api/v2#idempotency
-[api_documentation_slip]: http://docs.barzahlen.de/api/v2#calculating-the-signature
+[api_documentation_signature]: http://docs.barzahlen.de/api/v2#calculating-the-signature
 [api_documentation_webhooks]: http://docs.barzahlen.de/api/v2#webhooks
 [api_documentation_rate_limit]: http://docs.barzahlen.de/api/v2#rate-limiting
 [api_documentation_sandbox]: http://docs.barzahlen.de/api/v2#sandbox
@@ -430,4 +430,3 @@ For bugs and feature requests open an issue on Github. For code contributions fo
 [api_documentation_resend]: http://docs.barzahlen.de/api/v2#resend-email-text-message
 [api_documentation_invalidate]: http://docs.barzahlen.de/api/v2#invalidate-slip
 [api_documentation_error]: http://docs.barzahlen.de/api/v2#errors
-[rack_request]: http://www.rubydoc.info/gems/rack/Rack/Request#content_type-instance_method
