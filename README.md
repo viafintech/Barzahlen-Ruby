@@ -1,22 +1,6 @@
-[control_center_app]: https://control-center.barzahlen.de
-[api_documentation_base]: https://integration.barzahlen.de/en/api
-[api_documentation_idempotency]: https://integration.barzahlen.de/en/api#idempotency
-[api_documentation_signature]: https://integration.barzahlen.de/en/api#
-[api_documentation_slip]: https://integration.barzahlen.de/en/api#calculating-the-signature
-[api_documentation_webhooks]: https://integration.barzahlen.de/en/api#webhooks
-[api_documentation_rate_limit]: https://integration.barzahlen.de/en/api#rate-limiting
-[api_documentation_sandbox]: https://integration.barzahlen.de/en/api#sandbox
-[api_documentation_slip]: https://integration.barzahlen.de/en/api#create-slip
-[api_documentation_retrieve]: https://integration.barzahlen.de/en/api#retrieve-slip
-[api_documentation_update]: https://integration.barzahlen.de/en/api#update-slip
-[api_documentation_resend]: https://integration.barzahlen.de/en/api#resend-email-text-message
-[api_documentation_invalidate]: https://integration.barzahlen.de/en/api#invalidate-slip
-[api_documentation_error]: https://integration.barzahlen.de/en/api#errors
-[rack_request]: http://www.rubydoc.info/gems/rack/Rack/Request#content_type-instance_method
-
 # Barzahlen API Client in Ruby
 
-The official ruby gem for accessing the new [Barzahlen API v2][api_documentation_base].
+The official ruby gem for accessing the [Barzahlen API v2][api_documentation_base].
 
 ## Installation
 
@@ -89,7 +73,7 @@ end
 The following is happening during a request:
 
 1. The signature, based on the provided `division_id` and `payment_key`, will get created (for the signature creation please refer to [Barzahlen API v2 Signature Documentation][api_documentation_signature])
-2. A https-request is send to the barzahlen api endpoint.
+2. A https-request is send to the Barzahlen API endpoint.
 3. The response is evaluated.
   1. If an error occured, it will try to parse the error, create a client lib exception and throw it.
   2. If everything works fine, the response will be returned as a ruby hash.
@@ -396,7 +380,7 @@ Example hash response:
 }
 ```
 
-Please **don't forget** to respond at least with a http status out of the 200 range, so that the barzahlen systems can be certain that you processed the request successfully. (See in [webhook documentation][api_documentation_webhooks])
+Please **don't forget** to respond at least with a http status out of the 200 range, so that the Barzahlen systems can be certain that you processed the request successfully. (See in [webhook documentation][api_documentation_webhooks])
 
 ## Interprete Api Error and Return
 
@@ -432,3 +416,19 @@ error.request_id # The request id which can be used to tell us if we need to hel
 ### Signature Check Error
 
 If the generated signature in the webhook implementation is not the same which was send by the Barzahlen API v2, a `Barzahlen::Error::SignatureError` of type `Barzahlen::Error::StandardError` is raised.
+
+[control_center_app]: https://control-center.barzahlen.de
+[api_documentation_base]: https://integration.barzahlen.de/en/api
+[api_documentation_idempotency]: https://integration.barzahlen.de/en/api#idempotency
+[api_documentation_signature]: https://integration.barzahlen.de/en/api#
+[api_documentation_slip]: https://integration.barzahlen.de/en/api#calculating-the-signature
+[api_documentation_webhooks]: https://integration.barzahlen.de/en/api#webhooks
+[api_documentation_rate_limit]: https://integration.barzahlen.de/en/api#rate-limiting
+[api_documentation_sandbox]: https://integration.barzahlen.de/en/api#sandbox
+[api_documentation_slip]: https://integration.barzahlen.de/en/api#create-slip
+[api_documentation_retrieve]: https://integration.barzahlen.de/en/api#retrieve-slip
+[api_documentation_update]: https://integration.barzahlen.de/en/api#update-slip
+[api_documentation_resend]: https://integration.barzahlen.de/en/api#resend-email-text-message
+[api_documentation_invalidate]: https://integration.barzahlen.de/en/api#invalidate-slip
+[api_documentation_error]: https://integration.barzahlen.de/en/api#errors
+[rack_request]: http://www.rubydoc.info/gems/rack/Rack/Request#content_type-instance_method
