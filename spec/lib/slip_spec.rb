@@ -2,7 +2,7 @@ require "spec_helper"
 require "json"
 
 module Barzahlen
-  describe Slip do
+  describe CreateSlipRequest do
     let(:refund_slip) {
       return {
           slip_type: "refund",
@@ -42,7 +42,7 @@ module Barzahlen
       expect(request_client).to receive(:set).with(hash_including(headers: { "Idempotency-Key" => //}))
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect {
-        Barzahlen::Slip.new(refund_slip)
+        Barzahlen::CreateSlipRequest.new(refund_slip)
         }.to_not raise_error
     end
 
@@ -51,12 +51,12 @@ module Barzahlen
       expect(request_client).to receive(:set).with(hash_including(headers: { "Idempotency-Key" => //}))
       expect(Grac::Client).to receive(:new).and_return(request_client)
       expect {
-        Barzahlen::Slip.new(payment_slip)
+        Barzahlen::CreateSlipRequest.new(payment_slip)
         }.to_not raise_error
     end
 
     it "is setting correct uri" do
-      Barzahlen::Slip.new(refund_slip)
+      Barzahlen::CreateSlipRequest.new(refund_slip)
 
       expect(@@grac_client.uri).to eq("https://api.barzahlen.de/v2")
     end
@@ -66,7 +66,7 @@ module Barzahlen
         config.sandbox = true
       }
 
-      Barzahlen::Slip.new(refund_slip)
+      Barzahlen::CreateSlipRequest.new(refund_slip)
 
       expect(@@grac_client.uri).to eq("https://api-sandbox.barzahlen.de/v2")
     end
@@ -83,10 +83,10 @@ module Barzahlen
 
       new_payment_slip = nil
       expect {
-        new_payment_slip = Barzahlen::Slip.new(payment_slip)
+        new_payment_slip = Barzahlen::CreateSlipRequest.new(payment_slip)
         }.to_not raise_error
       expect {
-        new_payment_slip.create
+        new_payment_slip.send
         }.to_not raise_error
     end
   end

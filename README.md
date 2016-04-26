@@ -52,13 +52,11 @@ Per default this client lib is also supporting idempotency. An idempotent reques
 
 For further documentation please refer to the [Barzahlen API v2 Documentation][api_documentation_idempotency].
 
-A `slip` object has idempotency built in and can be retried (**create**d) as often as it is needed as long as the same object is used.
+A `slip request` object has idempotency built in and can be retried (**send**) as often as it is needed as long as the same object is used.
 
 ## Functionality (`production` and `sandbox`)
 
 For development purposes the client lib can be set to sandbox mode by setting the `sandbox`-variable in the configuration to true.
-
-In sandbox mode every request and also webhooks, which you can issue with the [Control Center App][control_center_app], are simulated. Everything which is produced in this mode obviously cannot be used in production.
 
 For further information please refer to the [Barzahlen API Sandbox Documentation][api_documentation_sandbox]
 
@@ -77,11 +75,11 @@ The following is happening during a request:
 3. The response is evaluated.
   1. If an error occured, it will try to parse the error, create a client lib exception and throw it.
   2. If everything works fine, the response will be returned as a ruby hash.
-4. If a `slip` object was created, the object can be used for making idempotency requests, by calling **create** on the `slip` object again.
+4. If a `slip request` object was created, the object can be used for making idempotency requests, by calling **send** on the `slip request` object again.
 
 ### Slip Creation
 
-For creating a `refund` or `payment` you first need to generate a slip hash which then can be used to create the actual slip.
+For creating a `refund` or `payment` you first need to generate a slip hash which then can be used to send the slip request.
 
 ```ruby
 new_payment_slip =  {
@@ -96,15 +94,15 @@ new_payment_slip =  {
                         }
                       ]
                     }
-bz_new_payment_slip = Barzahlen::Slip.new(new_payment_slip)
+bz_new_payment_slip = Barzahlen::CreateSlipRequest.new(new_payment_slip)
 ```
 
 A full list of all required and additional variables is available at [Barzahlen Api v2 slip creation documentation][api_documentation_slip].
 
-Afterwards this object can be used to create the `slip` and also use it for idempotency.
+Afterwards this object can be used to send the `slip request`.
 
 ```ruby
-bz_new_payment_slip.create
+bz_new_payment_slip.send
 ```
 
 #### Refund or Payment

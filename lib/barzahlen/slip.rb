@@ -6,13 +6,13 @@ module Barzahlen
 
   #For idempotency purposes a class takes care of refund and payment
 
-  class Slip
+  class CreateSlipRequest
     def initialize(opts = {})
       @request = Barzahlen.get_grac_client(Barzahlen::IDEMPOTENCY_ENABLED)
       @request_hash = opts
     end
 
-    def create
+    def send
       @request_hash.freeze
       @request_hash.each do |key, value|
         @request_hash[key].freeze
@@ -60,7 +60,7 @@ module Barzahlen
   def self.webhook_request(request)
     bz_hook_format = request["Bz-Hook-Format"]
 
-    #stop processing when bz-hook-format = v1 because it will be send as v2 again
+    #stop processing when bz-hook-format = v1 because it will be or was send as v2
     if bz_hook_format.include? "v1"
       return nil
     end
