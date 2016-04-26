@@ -79,7 +79,9 @@ module Barzahlen
       end
     end
 
+
     private
+
       def self.parse_json(json)
         begin
           hash = JSON.parse(json)

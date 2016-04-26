@@ -17,7 +17,6 @@ module Barzahlen
         request_host_path       = parsed_uri.path
         request_query_string    = URI.encode_www_form(params)
         request_idempotency_key = opts[:headers]["Idempotency-Key"]
-        # Prepare the Date header
         request_date_header     = Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         signature               = Barzahlen::Middleware.generate_bz_signature(

@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.version       = Barzahlen::VERSION
   spec.authors       = ["David Leib"]
   spec.email         = ["david.leib@barzahlen.de"]
-  spec.description   = %q{This is a ruby gem to access the barzahlen api online v2 for online shops.}
-  spec.summary       = %q{Client gem for api online v2}
+  spec.description   = %q{This is a ruby gem to access the Barzahlen API v2.}
+  spec.summary       = %q{Client gem for API Barzahlen v2.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -21,8 +21,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rake",                    "~> 10.4.1"
   spec.add_development_dependency "rspec",                   "~> 3.2.0"
-  spec.add_development_dependency "builder",                 "~> 3.2.2" # Needed for ci-reporter
-  spec.add_development_dependency "rspec_junit_formatter",   "~> 0.2.2"
   spec.add_development_dependency "rack-test",               "~> 0.6.3"
 
   spec.add_runtime_dependency     "grac",                    "~> 2.2.1"

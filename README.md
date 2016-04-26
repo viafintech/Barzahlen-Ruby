@@ -27,8 +27,8 @@ gem install barzahlen
 The gem's configuration values are as following:
 
 * `Sandbox`: Default = `false`
-* `Division ID`: Default = `not_valid_division_id`
-* `Payment key`: Default = `not_valid_payment_key`
+* `Division ID`: Default = `"not_valid_division_id"`
+* `Payment key`: Default = `"not_valid_payment_key"`
 
 Example configuration:
 
@@ -70,7 +70,7 @@ end
 
 The following is happening during a request:
 
-1. The signature, based on the provided `division_id` and `payment_key`, will get created (for the signature creation please refer to [Barzahlen API v2 Signature Documentation][api_documentation_signature])
+1. The signature, based on the provided `division_id` and `payment_key`, will get created.
 2. A https-request is send to the Barzahlen API endpoint.
 3. The response is evaluated.
   1. If an error occured, it will try to parse the error, create a client lib exception and throw it.
@@ -174,7 +174,7 @@ updateable_slip = {
 Barzahlen.update_slip(slip_id, updateable_slip)
 ```
 
-As a result you will get the whole slip as a hash back:
+As a result you will get the whole slip as a hash:
 
 ```ruby
 {
@@ -207,9 +207,9 @@ As a result you will get the whole slip as a hash back:
 
 Content can be looked up [here][api_documentation_update].
 
-### Resend Slip E-mail
+### Resend Slip Email
 
-Resending a slip e-mail is done as following:
+Resending a slip email is done as following:
 
 ```ruby
 Barzahlen.resend_email(slip_id)
@@ -409,18 +409,25 @@ error.request_id # The request id which can be used to tell us if we need to hel
 
 If the generated signature in the webhook implementation is not the same which was send by the Barzahlen API v2, a `Barzahlen::Error::SignatureError` of type `Barzahlen::Error::StandardError` is raised.
 
+## Bugs and Contribution
+
+For bugs and feature requests open an issue on Github. For code contributions fork the repo, make your changes and create a pull request.
+
+### License
+
+[LICENSE](LICENSE) (MIT)
+
 [control_center_app]: https://control-center.barzahlen.de
-[api_documentation_base]: https://integration.barzahlen.de/en/api
-[api_documentation_idempotency]: https://integration.barzahlen.de/en/api#idempotency
-[api_documentation_signature]: https://integration.barzahlen.de/en/api#
-[api_documentation_slip]: https://integration.barzahlen.de/en/api#calculating-the-signature
-[api_documentation_webhooks]: https://integration.barzahlen.de/en/api#webhooks
-[api_documentation_rate_limit]: https://integration.barzahlen.de/en/api#rate-limiting
-[api_documentation_sandbox]: https://integration.barzahlen.de/en/api#sandbox
-[api_documentation_slip]: https://integration.barzahlen.de/en/api#create-slip
-[api_documentation_retrieve]: https://integration.barzahlen.de/en/api#retrieve-slip
-[api_documentation_update]: https://integration.barzahlen.de/en/api#update-slip
-[api_documentation_resend]: https://integration.barzahlen.de/en/api#resend-email-text-message
-[api_documentation_invalidate]: https://integration.barzahlen.de/en/api#invalidate-slip
-[api_documentation_error]: https://integration.barzahlen.de/en/api#errors
+[api_documentation_base]: http://docs.barzahlen.de/api/v2
+[api_documentation_idempotency]: http://docs.barzahlen.de/api/v2#idempotency
+[api_documentation_slip]: http://docs.barzahlen.de/api/v2#calculating-the-signature
+[api_documentation_webhooks]: http://docs.barzahlen.de/api/v2#webhooks
+[api_documentation_rate_limit]: http://docs.barzahlen.de/api/v2#rate-limiting
+[api_documentation_sandbox]: http://docs.barzahlen.de/api/v2#sandbox
+[api_documentation_slip]: http://docs.barzahlen.de/api/v2#create-slip
+[api_documentation_retrieve]: http://docs.barzahlen.de/api/v2#retrieve-slip
+[api_documentation_update]: http://docs.barzahlen.de/api/v2#update-slip
+[api_documentation_resend]: http://docs.barzahlen.de/api/v2#resend-email-text-message
+[api_documentation_invalidate]: http://docs.barzahlen.de/api/v2#invalidate-slip
+[api_documentation_error]: http://docs.barzahlen.de/api/v2#errors
 [rack_request]: http://www.rubydoc.info/gems/rack/Rack/Request#content_type-instance_method

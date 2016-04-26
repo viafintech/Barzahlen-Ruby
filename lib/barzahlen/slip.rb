@@ -4,7 +4,7 @@ require "json"
 module Barzahlen
   IDEMPOTENCY_ENABLED = true
 
-  #For idempotency purposes a class takes care of refund and payment
+  # For idempotency purposes a class takes care of refund and payment
 
   class CreateSlipRequest
     def initialize(opts = {})
@@ -23,7 +23,7 @@ module Barzahlen
     end
   end
 
-  #If idempotency is not important a simple request is more than enough
+  # If idempotency is not important a simple request is more than enough
 
   def self.retrieve_slip(slip_id)
     self.execute_with_error_handling do
@@ -82,7 +82,9 @@ module Barzahlen
     end
   end
 
+
   private
+
     @@grac_client = nil
 
     def self.get_grac_client(idempotency = false)
