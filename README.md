@@ -374,7 +374,7 @@ Example hash response:
 }
 ```
 
-For further documentation about webhooks please refer to [webhook documentation][api_documentation_webhooks]
+For further documentation about webhooks please refer to [webhook documentation][api_documentation_webhooks].
 
 ## Interprete Api Error and Return
 
