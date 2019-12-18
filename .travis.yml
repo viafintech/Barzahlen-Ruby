@@ -1,7 +1,8 @@
+dist: trusty
 language: ruby
 rvm:
-  - 2.3.7
-  - 2.4.4
-  - 2.5.1
+  - 2.4.8
+  - 2.5.7
+  - 2.6.5
 script:
   - bundle exec rspec
