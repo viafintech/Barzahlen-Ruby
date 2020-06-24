@@ -13,7 +13,7 @@ GEM
     ffi (1.9.25)
     grac (2.2.1)
       typhoeus (~> 0.6.9)
-    rack (2.0.8)
+    rack (2.2.3)
     rack-test (0.6.3)
       rack (>= 1.0)
     rake (13.0.1)
