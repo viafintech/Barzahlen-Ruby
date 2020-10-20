@@ -1,4 +1,6 @@
-ENV['RACK_ENV'] ||= "test"
+# frozen_string_literal: true
+
+ENV['RACK_ENV'] ||= 'test'
 
 require 'rack/test'
 require './lib/barzahlen'

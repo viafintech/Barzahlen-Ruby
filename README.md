@@ -1,6 +1,6 @@
 # Barzahlen API Client in Ruby
 
-[![Travis Build state](https://api.travis-ci.org/Barzahlen/Barzahlen-Ruby.svg)](https://travis-ci.org/Barzahlen/Barzahlen-Ruby) [![Code Climate](https://codeclimate.com/github/Barzahlen/Barzahlen-Ruby/badges/gpa.svg)](https://codeclimate.com/github/Barzahlen/Barzahlen-Ruby) [![RubyDoc](https://img.shields.io/badge/ruby-doc-green.svg)](http://rubydoc.info/github/Barzahlen/Barzahlen-Ruby)
+[![Travis Build state](https://api.travis-ci.org/Barzahlen/Barzahlen-Ruby.svg)](https://travis-ci.org/Barzahlen/Barzahlen-Ruby) [![Code Climate](https://codeclimate.com/github/Barzahlen/Barzahlen-Ruby/badges/gpa.svg)](https://codeclimate.com/github/Barzahlen/Barzahlen-Ruby) [![RubyDoc](https://img.shields.io/badge/ruby-doc-green.svg)](http://rubydoc.info/github/Barzahlen/Barzahlen-Ruby) [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop-hq/rubocop)
 
 The official ruby gem for accessing the [Barzahlen API v2][api_documentation_base].
 
