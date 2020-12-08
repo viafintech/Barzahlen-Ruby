@@ -46,7 +46,7 @@ Barzahlen.configure do |config|
 end
 ```
 
-The requests issued by this gem call the api endpoints of viafintech, which are stored in constant variables in the configuration.
+The requests issued by this gem call the API endpoints of viafintech, which are stored in constant variables in the configuration.
 
 The `division_id` and the `payment_key` can be found in the [Control Center App][control_center_app] and **must** be set in the configuration if you want to use the gem.
 
@@ -101,7 +101,7 @@ new_payment_slip =  {
 bz_new_payment_slip = Barzahlen::CreateSlipRequest.new(new_payment_slip)
 ```
 
-A full list of all required and additional variables is available at [viafintech Api v2 slip creation documentation][api_documentation_slip].
+A full list of all required and additional variables is available at [viafintech API v2 slip creation documentation][api_documentation_slip].
 
 Afterwards this object can be used to send the `slip request`.
 
@@ -111,7 +111,7 @@ bz_new_payment_slip.send
 
 #### Refund or Payment
 
-All required and applicable variables for a `refund` or `payment` slip is well documented in the [Barzahlen API v2 slip creation Documentation][api_documentation_slip].
+All required and applicable variables for a `refund` or `payment` slip is well documented in the [viafintech API v2 slip creation Documentation][api_documentation_slip].
 
 ### Retrieve Slip
 
@@ -219,7 +219,7 @@ Resending a slip email is done as following:
 Barzahlen.resend_email(slip_id)
 ```
 
-For further information please refer to the [Barzahlen API v2 resend documentation][api_documentation_resend].
+For further information please refer to the [viafintech API v2 resend documentation][api_documentation_resend].
 
 ### Resend Slip Text Message
 
@@ -229,7 +229,7 @@ Resending a slip text message is done as following:
 Barzahlen.resend_text_message(slip_id)
 ```
 
-For further information please refer to the [Barzahlen API v2 resend documentation][api_documentation_resend].
+For further information please refer to the [viafintech API v2 resend documentation][api_documentation_resend].
 
 ### Invalidate Slip
 
@@ -278,7 +278,7 @@ When a slip is paid or expires, a webhook request is issued to the url you provi
 
 In sandbox mode you can manually trigger a `paid` or `expired` webhook request in the [Control Center App][control_center_app].
 
-The webhook request is also signed as normal requests to the api with the aforementioned `payment_key`. But don't worry about the signature check because this library will take care of it.
+The webhook request is also signed as normal requests to the API with the aforementioned `payment_key`. But don't worry about the signature check because this library will take care of it.
 
 If the signature check is failing a **Barzahlen::Error::SignatureError** is raised.
 
@@ -337,7 +337,7 @@ request_hash = Barzahlen.webhook_request(request)
 
 The following can happen:
 
-* If the request is an api v1 webhook request: nil is returned.
+* If the request is an API v1 webhook request: nil is returned.
 * If the signature check is not successful: a `SignatureError` is raised.
 * If the everything works fine: a hash with the content is returned.
 
@@ -378,9 +378,9 @@ Example hash response:
 
 For further documentation about webhooks please refer to [webhook documentation][api_documentation_webhooks].
 
-## Interprete Api Error and Return
+## Interprete API Error and Return
 
-### Api Client Errors
+### API Client Errors
 
 Errors will be generated and raised based on the [viafintech API v2 error response][api_documentation_error] information.
 
