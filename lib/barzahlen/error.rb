@@ -102,8 +102,8 @@ module Barzahlen
 
         error_hash[:error_class]       ||= "Unexpected_Error"
         error_hash[:error_code]        ||= "Unknown error code (body): \"#{body.to_s}\""
-        error_hash[:message]           ||= "Please contact CPS to help us fix that as soon as possible."
-        error_hash[:documentation_url] ||= "https://www.cashpaymentsolutions.com/de/geschaeftskunden/kontakt"
+        error_hash[:message]           ||= "Please contact viafintech to help us fix that as soon as possible."
+        error_hash[:documentation_url] ||= "https://www.viafintech.com/contact/"
         error_hash[:request_id]        ||= "not_available"
 
         error_hash

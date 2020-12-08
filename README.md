@@ -2,7 +2,9 @@
 
 [![Travis Build state](https://api.travis-ci.org/Barzahlen/Barzahlen-Ruby.svg)](https://travis-ci.org/Barzahlen/Barzahlen-Ruby) [![Code Climate](https://codeclimate.com/github/Barzahlen/Barzahlen-Ruby/badges/gpa.svg)](https://codeclimate.com/github/Barzahlen/Barzahlen-Ruby) [![RubyDoc](https://img.shields.io/badge/ruby-doc-green.svg)](http://rubydoc.info/github/Barzahlen/Barzahlen-Ruby)
 
-The official ruby gem for accessing the [Barzahlen API v2][api_documentation_base].
+The official ruby gem for accessing the [viafintech API v2][api_documentation_base].
+Barzahlen refers to the product offered through the API.
+viafintech refers to the company offering this service.
 
 ## Installation
 
@@ -44,15 +46,15 @@ Barzahlen.configure do |config|
 end
 ```
 
-The requests issued by this gem call the api endpoints of Barzahlen, which are stored in constant variables in the configuration.
+The requests issued by this gem call the api endpoints of viafintech, which are stored in constant variables in the configuration.
 
-The `division_id` and the `payment_key` can be found in the [Barzahlen Control Center App][control_center_app] and **must** be set in the configuration if you want to use the gem.
+The `division_id` and the `payment_key` can be found in the [Control Center App][control_center_app] and **must** be set in the configuration if you want to use the gem.
 
 ## Idempotency Support
 
 Per default this client lib is also supporting idempotency. An idempotent request is simply sending the same request again. This is very useful if a network failure happens or our system fails to process your request and you can simply resend the request.
 
-For further documentation please refer to the [Barzahlen API v2 Documentation][api_documentation_idempotency].
+For further documentation please refer to the [viafintech API v2 Documentation][api_documentation_idempotency].
 
 A `slip request` object has idempotency built in and can be retried (**send**) as often as it is needed as long as the same object is used.
 
@@ -60,7 +62,7 @@ A `slip request` object has idempotency built in and can be retried (**send**) a
 
 For development purposes the client lib can be set to sandbox mode by setting the `sandbox`-variable in the configuration to true.
 
-For further information please refer to the [Barzahlen API Sandbox Documentation][api_documentation_sandbox]
+For further information please refer to the [viafintech API Sandbox Documentation][api_documentation_sandbox]
 
 ```ruby
 Barzahlen.configure do |config|
@@ -73,7 +75,7 @@ end
 The following is happening during a request:
 
 1. The [signature][api_documentation_signature], based on the provided `division_id` and `payment_key`, will get created.
-2. A https-request is send to the Barzahlen API endpoint.
+2. A https-request is send to the viafintech API endpoint.
 3. The response is evaluated.
   1. If an error occured, it will try to parse the error, create a client lib exception and throw it.
   2. If everything works fine, the response will be returned as a ruby hash.
@@ -99,7 +101,7 @@ new_payment_slip =  {
 bz_new_payment_slip = Barzahlen::CreateSlipRequest.new(new_payment_slip)
 ```
 
-A full list of all required and additional variables is available at [Barzahlen Api v2 slip creation documentation][api_documentation_slip].
+A full list of all required and additional variables is available at [viafintech Api v2 slip creation documentation][api_documentation_slip].
 
 Afterwards this object can be used to send the `slip request`.
 
@@ -150,13 +152,13 @@ This will return an object which looks the following:
 }
 ```
 
-For a complete list of all response variables please refer to the [Barzahlen API v2 documentation][api_documentation_retrieve] on how a slip is retrieved.
+For a complete list of all response variables please refer to the [viafintech API v2 documentation][api_documentation_retrieve] on how a slip is retrieved.
 
 ### Update Slip
 
 For updating a slip, a hash has to be supplied as mentioned prior in the slip section.
 
-For a full list of all variables and their constraints please read the [Barzahlen Api v2 update slip documentation][api_documentation_update].
+For a full list of all variables and their constraints please read the [viafintech Api v2 update slip documentation][api_documentation_update].
 
 ```ruby
 updateable_slip = {
@@ -268,19 +270,19 @@ As a response you can get:
 }
 ```
 
-For a full list of all response variables please refer to the [Barzahlen API v2 invalidate slip documentation][api_documentation_invalidate].
+For a full list of all response variables please refer to the [viafintech API v2 invalidate slip documentation][api_documentation_invalidate].
 
 ### Webhook Handling
 
-When a slip is paid or expires, a webhook request is issued to the url you provided individually in the slip or in the [Barzahlen Control Center App][control_center_app].
+When a slip is paid or expires, a webhook request is issued to the url you provided individually in the slip or in the [viafintech Control Center App][control_center_app].
 
-In sandbox mode you can manually trigger a `paid` or `expired` webhook request in the [Barzahlen Control Center App][control_center_app].
+In sandbox mode you can manually trigger a `paid` or `expired` webhook request in the [Control Center App][control_center_app].
 
 The webhook request is also signed as normal requests to the api with the aforementioned `payment_key`. But don't worry about the signature check because this library will take care of it.
 
 If the signature check is failing a **Barzahlen::Error::SignatureError** is raised.
 
-For further documentation please refer to the [webhooks Barzahlen API v2 documentation][api_documentation_webhooks].
+For further documentation please refer to the [webhooks viafintech API v2 documentation][api_documentation_webhooks].
 
 The notification handling is expecting an Object in the following structure:
 
@@ -380,9 +382,9 @@ For further documentation about webhooks please refer to [webhook documentation]
 
 ### Api Client Errors
 
-Errors will be generated and raised based on the [Barzahlen API v2 error response][api_documentation_error] information.
+Errors will be generated and raised based on the [viafintech API v2 error response][api_documentation_error] information.
 
-The `error_class`, which is explained on [Barzahlen API v2 Documentation][api_documentation_error] is used as the error name:
+The `error_class`, which is explained on [viafintech API v2 Documentation][api_documentation_error] is used as the error name:
 
 * Barzahlen::Error::AuthError
 * Barzahlen::Error::TransportError
