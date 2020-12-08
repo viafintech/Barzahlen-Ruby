@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   # For explanations see http://docs.rubygems.org/read/chapter/20
   spec.name          = "barzahlen"
   spec.version       = Barzahlen::VERSION
-  spec.authors       = ["David Leib"]
-  spec.email         = ["david.leib@barzahlen.de"]
-  spec.description   = %q{This is a ruby gem to access the Barzahlen API v2.}
-  spec.summary       = %q{Client gem for API Barzahlen v2.}
+  spec.authors       = ["David Leib", "Tobias Schoknecht"]
+  spec.email         = ["tobias.schoknecht@viafintech.com"]
+  spec.description   = %q{This is a ruby gem to access the viafintech API v2.}
+  spec.summary       = %q{Client gem for viafintech API v2.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
