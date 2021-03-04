@@ -58,7 +58,7 @@ module Barzahlen
     it "is setting correct uri" do
       Barzahlen::CreateSlipRequest.new(refund_slip)
 
-      expect(@@grac_client.uri).to eq("https://api.barzahlen.de/v2")
+      expect(@@grac_client.uri).to eq("https://api.viafintech.com/v2")
     end
 
     it "is setting correct sandbox uri" do
@@ -68,7 +68,7 @@ module Barzahlen
 
       Barzahlen::CreateSlipRequest.new(refund_slip)
 
-      expect(@@grac_client.uri).to eq("https://api-sandbox.barzahlen.de/v2")
+      expect(@@grac_client.uri).to eq("https://api-sandbox.viafintech.com/v2")
     end
 
     it "generates a payment and creates request with grac" do

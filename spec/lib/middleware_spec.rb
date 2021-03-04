@@ -11,7 +11,7 @@ module Barzahlen
         end
 
         @date = "13 Apr 2016 15:00:00 GMT"
-        @request_uri = "https://api.barzahlen.de/v2"
+        @request_uri = "https://api.viafintech.com/v2"
         @request_method = "get"
 
         @idempotency_key = "6729eb3c-e4b7-49ef-adb6-cbbfdb327774"
@@ -52,8 +52,8 @@ module Barzahlen
           {
             headers: {
               Date: @date,
-              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=54295c2524a83e8067510a8b49c14089158162f47b202d5e6be57ee81b810542",
-              Host: "api.barzahlen.de:443"
+              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=5daa2167ae9a510fbc144ca246ab42d18695b2903de238ccc72f2552f888037b",
+              Host: "api.viafintech.com:443"
             }
           },
           @request_uri,
@@ -81,8 +81,8 @@ module Barzahlen
           {
             headers: {
               Date: @date,
-              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=0b3b29ee6f126ffc01f6ab279e8d92119ce4ca758125db86777d20683bdec63e",
-              Host: "api.barzahlen.de:443",
+              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=c07c626d221b73cd8f3d7e125e4f74421c19016f352f0845b0a64068a2d9392c",
+              Host: "api.viafintech.com:443",
               "Idempotency-Key" => @idempotency_key
             }
           },
@@ -113,8 +113,8 @@ module Barzahlen
           {
             headers: {
               Date: @date,
-              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=2688e8ddea8c85591239f45248463f04b1013783063cb20851e65e5513f3e602",
-              Host: "api.barzahlen.de:443",
+              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=0aa39eb2eaf092547bcae9da3a0d506c2ac5cc119441b28d9303af43d3f65ebd",
+              Host: "api.viafintech.com:443",
             }
           },
           @request_uri,
@@ -140,8 +140,8 @@ module Barzahlen
           {
             headers: {
               Date: @date,
-              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=5e5c482d13c9f298e39496273a6f2d56325a7d99727486b49ac9532fe72d62ed",
-              Host: "api.barzahlen.de:443",
+              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=3eb8454ced6bd75f3ac7c136737f73ba540f8f5ebc652ec1ffcba7109ed8085e",
+              Host: "api.viafintech.com:443",
             }
           },
           @request_uri,
@@ -167,8 +167,8 @@ module Barzahlen
           {
             headers: {
               Date: @date,
-              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=66cd7fe64fbd25dc56aacf59055b363f9b41342dfb44f8348226ca9516bbd466",
-              Host: "api.barzahlen.de:443",
+              Authorization: "BZ1-HMAC-SHA256 DivisionId=12345, Signature=61ce6f17bdb8a2a1dbb3b1c96103b861820c91a9a1716a4ddab206d23f4c5849",
+              Host: "api.viafintech.com:443",
             }
           },
           @request_uri,
@@ -189,7 +189,7 @@ module Barzahlen
           config.payment_key = "123456"
         end
 
-        @request_host_header = "api.barzahlen.de"
+        @request_host_header = "api.viafintech.com"
         @request_method = "GET"
         @request_date_header = "13 Apr 2016 15:00:00 GMT"
         @request_host_path = ""
@@ -206,7 +206,7 @@ module Barzahlen
           @request_date_header
           )
 
-        expect(signature).to eq("f9657db3b4adba7c838a16f22a7e3202c80d5f09c2a8caae7f065d0015b6c0b1")
+        expect(signature).to eq("7e5f2c381a959e7fc41494336e49540847df0bba9839684346c83c4ffa54b5fb")
       end
 
       it "generates the signature correctly with idempotency key" do
@@ -221,7 +221,7 @@ module Barzahlen
           @request_idempotency_key
           )
 
-        expect(signature).to eq("6152ebdf8ba4254bf069c63c7e84d48a8f85606821a17637ecf838114a7b3159")
+        expect(signature).to eq("6f01064910997e08435e23e929b252218e5eb359dfbfd7ac20ad740d7ef62630")
       end
 
       it "generates the signature correctly everything set" do
@@ -240,7 +240,7 @@ module Barzahlen
           @request_idempotency_key
           )
 
-        expect(signature).to eq("35235b5aa4a7a0e30aa6ca9fe115cfff2f8b100ddca0eaf8370f2c557305a1f8")
+        expect(signature).to eq("86dc61c90021e03387e0daeb19004503da6440a0c45376c402f2b3d4a40ac678")
       end
 
       it "generates a correct webhook signature" do
@@ -304,7 +304,7 @@ module Barzahlen
           config.payment_key = "6b3fb3abef828c7d10b5a905a49c988105621395"
         end
 
-        @request_host_header = "api.barzahlen.de"
+        @request_host_header = "api.viafintech.com"
         @request_method = "GET"
         @request_date_header = "Thu, 31 Mar 2016 10:50:31 GMT"
         @request_host_path = "/v2/slips/slp-d90ab05c-69f2-4e87-9972-97b3275a0ccd"
@@ -323,7 +323,7 @@ module Barzahlen
           @request_idempotency_key
           )
 
-        expect(signature).to eq("3b1a28fffd1cd2bbc1ec24cfbca1e85d802159e78c08328d92d4337a4a33b61d")
+        expect(signature).to eq("d79eec400bdc4506a65291382f460af262ab5b0d8641445e6b28c3fba9f7e4c1")
       end
     end
   end

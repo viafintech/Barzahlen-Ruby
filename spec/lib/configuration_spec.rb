@@ -10,8 +10,8 @@ module Barzahlen
     end
 
     it "has valid constant values" do
-      expect(Barzahlen::Configuration::API_HOST).to eq("https://api.barzahlen.de/v2")
-      expect(Barzahlen::Configuration::API_HOST_SANDBOX).to eq("https://api-sandbox.barzahlen.de/v2")
+      expect(Barzahlen::Configuration::API_HOST).to eq("https://api.viafintech.com/v2")
+      expect(Barzahlen::Configuration::API_HOST_SANDBOX).to eq("https://api-sandbox.viafintech.com/v2")
     end
 
     it "can set specific values" do

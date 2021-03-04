@@ -33,7 +33,7 @@ module Barzahlen
           error_class: "invalid_parameter",
           error_code: "reference_key_already_exists",
           message: "The given reference key already exists - use another one.",
-          documentation_url: "https://www.barzahlen.de/",
+          documentation_url: "https://www.viafintech.com/",
           request_id: "64ec26b27d414a66b87f2ec7cad7e92c"
         }
       }
@@ -120,7 +120,7 @@ module Barzahlen
         expect(error_class.error_class).to eq("invalid_parameter")
         expect(error_class.error_code).to eq("reference_key_already_exists")
         expect(error_class.error_message).to eq("The given reference key already exists - use another one.")
-        expect(error_class.documentation_url).to eq("https://www.barzahlen.de/")
+        expect(error_class.documentation_url).to eq("https://www.viafintech.com/")
         expect(error_class.request_id).to eq("64ec26b27d414a66b87f2ec7cad7e92c")
       end
 
@@ -139,7 +139,7 @@ module Barzahlen
         error_body = "502 Bad Gateway"
         error_class = Barzahlen::Error.generate_error_from_response(error_body)
 
-        expect(error_class.message).to eq("Error occurred with: Please contact CPS to help us fix that as soon as possible.")
+        expect(error_class.message).to eq("Error occurred with: Please contact viafintech to help us fix that as soon as possible.")
       end
     end
   end
