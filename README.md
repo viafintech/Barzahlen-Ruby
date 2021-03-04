@@ -421,16 +421,16 @@ For bugs and feature requests open an issue on Github. For code contributions fo
 
 [LICENSE](LICENSE) (MIT)
 
-[control_center_app]: https://controlcenter.barzahlen.de
-[api_documentation_base]: http://docs.barzahlen.de/api/v2
-[api_documentation_idempotency]: http://docs.barzahlen.de/api/v2#idempotency
-[api_documentation_signature]: http://docs.barzahlen.de/api/v2#calculating-the-signature
-[api_documentation_webhooks]: http://docs.barzahlen.de/api/v2#webhooks
-[api_documentation_rate_limit]: http://docs.barzahlen.de/api/v2#rate-limiting
-[api_documentation_sandbox]: http://docs.barzahlen.de/api/v2#sandbox
-[api_documentation_slip]: http://docs.barzahlen.de/api/v2#create-slip
-[api_documentation_retrieve]: http://docs.barzahlen.de/api/v2#retrieve-slip
-[api_documentation_update]: http://docs.barzahlen.de/api/v2#update-slip
-[api_documentation_resend]: http://docs.barzahlen.de/api/v2#resend-email-text-message
-[api_documentation_invalidate]: http://docs.barzahlen.de/api/v2#invalidate-slip
-[api_documentation_error]: http://docs.barzahlen.de/api/v2#errors
+[control_center_app]: https://controlcenter.viacash.com
+[api_documentation_base]: http://docs.viafintech.com/api/v2
+[api_documentation_idempotency]: http://docs.viafintech.com/api/v2#idempotency
+[api_documentation_signature]: http://docs.viafintech.com/api/v2#calculating-the-signature
+[api_documentation_webhooks]: http://docs.viafintech.com/api/v2#webhooks
+[api_documentation_rate_limit]: http://docs.viafintech.com/api/v2#rate-limiting
+[api_documentation_sandbox]: http://docs.viafintech.com/api/v2#sandbox
+[api_documentation_slip]: http://docs.viafintech.com/api/v2#create-slip
+[api_documentation_retrieve]: http://docs.viafintech.com/api/v2#retrieve-slip
+[api_documentation_update]: http://docs.viafintech.com/api/v2#update-slip
+[api_documentation_resend]: http://docs.viafintech.com/api/v2#resend-email-text-message
+[api_documentation_invalidate]: http://docs.viafintech.com/api/v2#invalidate-slip
+[api_documentation_error]: http://docs.viafintech.com/api/v2#errors

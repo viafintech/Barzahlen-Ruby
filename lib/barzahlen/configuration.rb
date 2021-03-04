@@ -1,7 +1,7 @@
 module Barzahlen
   class Configuration
-    API_HOST = "https://api.barzahlen.de/v2"
-    API_HOST_SANDBOX = "https://api-sandbox.barzahlen.de/v2"
+    API_HOST = "https://api.viafintech.com/v2"
+    API_HOST_SANDBOX = "https://api-sandbox.viafintech.com/v2"
 
     attr_accessor :sandbox
     attr_accessor :division_id
