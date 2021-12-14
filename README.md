@@ -11,7 +11,7 @@ viafintech refers to the company offering this service.
 Add this line to your application's gemfile
 
 ```ruby
-gem 'barzahlen', '~> 2.0.0'
+gem 'barzahlen', '~> 2.2.0'
 ```
 
 Then execute:
