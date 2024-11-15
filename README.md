@@ -48,7 +48,7 @@ end
 
 The requests issued by this gem call the API endpoints of viafintech, which are stored in constant variables in the configuration.
 
-The `division_id` and the `payment_key` can be found in the [Control Center App][control_center_app] and **must** be set in the configuration if you want to use the gem.
+The `division_id` and the `payment_key` can be found in the [viafintech App][viafintech_app] and **must** be set in the configuration if you want to use the gem.
 
 ## Idempotency Support
 
@@ -274,9 +274,9 @@ For a full list of all response variables please refer to the [viafintech API v2
 
 ### Webhook Handling
 
-When a slip is paid or expires, a webhook request is issued to the url you provided individually in the slip or in the [viafintech Control Center App][control_center_app].
+When a slip is paid or expires, a webhook request is issued to the url you provided individually in the slip or in the [viafintech App][viafintech_app].
 
-In sandbox mode you can manually trigger a `paid` or `expired` webhook request in the [Control Center App][control_center_app].
+In sandbox mode you can manually trigger a `paid` or `expired` webhook request in the [viafintech App][viafintech_app].
 
 The webhook request is also signed as normal requests to the API with the aforementioned `payment_key`. But don't worry about the signature check because this library will take care of it.
 
@@ -421,7 +421,7 @@ For bugs and feature requests open an issue on Github. For code contributions fo
 
 [LICENSE](LICENSE) (MIT)
 
-[control_center_app]: https://controlcenter.viacash.com
+[viafintech_app]: https://app.viafintech.com
 [api_documentation_base]: http://docs.viafintech.com/api/v2
 [api_documentation_idempotency]: http://docs.viafintech.com/api/v2#idempotency
 [api_documentation_signature]: http://docs.viafintech.com/api/v2#calculating-the-signature
